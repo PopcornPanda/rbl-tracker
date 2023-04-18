@@ -5,34 +5,66 @@ namespace rbl_tracker.Services.RblServices
 {
     public class RblService : IRblService
     {
-        private static List<Rbl> rbls = new List<Rbl>{
-            new Rbl(),
-            new Rbl {Name = "cbl", Address = "cbl.abuseat.org"}
-        };
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public RblService(IMapper mapper)
+        public RblService(IMapper mapper, DataContext context)
         {
+            _context = context;
             _mapper = mapper;
         }
         public async Task<ServiceResponse<List<GetRblDto>>> AddRbl(NewRblDto newRbl)
         {
             var serviceResponse = new ServiceResponse<List<GetRblDto>>();
-            rbls.Add(_mapper.Map<Rbl>(newRbl));
-            serviceResponse.Data = rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToList();
+
+            _context.Rbls.Add(_mapper.Map<Rbl>(newRbl));
+            await _context.SaveChangesAsync();
+
+            serviceResponse.Data =
+                await _context.Rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToListAsync();
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetRblDto>>> DeleteRbl(Guid id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetRblDto>>();
+
+            try
+            {
+                var rbl = await _context.Rbls.FirstOrDefaultAsync(r => r.Id == id);
+                if (rbl is null)
+                    throw new Exception($"Rbl with Id '{id}' not found");
+
+                _context.Rbls.Remove(rbl);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = await
+                    _context.Rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetRblDto>>> GetAllRbls()
         {
             var serviceResponse = new ServiceResponse<List<GetRblDto>>();
-            serviceResponse.Data = rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToList();
+
+            serviceResponse.Data =
+                await _context.Rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToListAsync();
+
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetRblDto>> GetRblById(Guid id)
         {
             var serviceResponse = new ServiceResponse<GetRblDto>();
+            var rbls = await _context.Rbls.ToListAsync();
             serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Id == id));
             return serviceResponse;
         }
@@ -43,7 +75,7 @@ namespace rbl_tracker.Services.RblServices
 
             try
             {
-                var rbl = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Id == updatedRbl.Id));
+                var rbl = await _context.Rbls.FirstOrDefaultAsync(r => r.Id == updatedRbl.Id);
                 if (rbl is null)
                     throw new Exception($"Rbl with Id '{updatedRbl.Id}' not found");
 
@@ -53,6 +85,7 @@ namespace rbl_tracker.Services.RblServices
                 rbl.Level = updatedRbl.Level;
                 rbl.DelistUrl = updatedRbl.DelistUrl;
 
+                await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetRblDto>(rbl);
 
             }

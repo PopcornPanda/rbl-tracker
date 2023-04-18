@@ -7,6 +7,7 @@ namespace rbl_tracker.Services.RblServices
         Task<ServiceResponse<GetRblDto>> GetRblById(Guid id);
         Task<ServiceResponse<List<GetRblDto>>> AddRbl(NewRblDto newRbl);
         Task<ServiceResponse<GetRblDto>> UpdateRbl(UpdateRblDto updatedRbl);
+        Task<ServiceResponse<List<GetRblDto>>> DeleteRbl(Guid id);
 
     }
 }
