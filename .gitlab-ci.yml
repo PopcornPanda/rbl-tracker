@@ -1,0 +1,35 @@
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+
+stages:
+  - build
+  - docker
+
+build application:
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  stage: build
+  script:
+    - dotnet restore
+    - dotnet publish -c Release -o publish/
+  artifacts:
+    paths:
+      - publish/rbl-tracker.dll
+    expire_in: 1 hour
+  tags:
+    - docker
+    - contabo
+
+create docker image:
+  image: docker:23.0.4
+  stage: docker
+  services:
+    - name: docker:23.0.4-dind
+      alias: docker
+  before_script:
+    - docker info
+  script:
+    - docker build -t ${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-${CI_PIPELINE_IID} .
+  tags:
+    - docker
+    - contabo
+    
