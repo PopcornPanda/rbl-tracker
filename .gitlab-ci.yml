@@ -1,5 +1,17 @@
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
+  CONTAINER_DEV_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+  CONTAINER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_PROTECTED
 
 stages:
   - build
@@ -18,18 +30,45 @@ build application:
   tags:
     - docker
     - contabo
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+    - if: $CI_COMMIT_TAG =~ "/^$/" && $CI_PIPELINE_SOURCE != 'merge_request_event'
+      when: manual
 
-create docker image:
+create dev image:
   image: docker:23.0.4
   stage: docker
   services:
     - name: docker:23.0.4-dind
       alias: docker
+  needs:
+    - build application
   before_script:
     - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t ${CI_PROJECT_NAME}:${CI_COMMIT_BRANCH}-${CI_PIPELINE_IID} .
+    - docker build -t ${CONTAINER_DEV_IMAGE} -f ${CI_PROJECT_DIR}/Dockerfile ${CI_PROJECT_DIR}
+    - docker push ${CONTAINER_DEV_IMAGE}
   tags:
     - docker
     - contabo
-    
+
+create release image:
+  image: docker:23.0.4
+  stage: docker
+  needs:
+    - create dev image
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker tag ${CONTAINER_DEV_IMAGE} ${CONTAINER_RELEASE_IMAGE}
+    - docker push ${CONTAINER_RELEASE_IMAGE}
+  tags:
+    - docker
+    - contabo
+  only:
+    - tags
