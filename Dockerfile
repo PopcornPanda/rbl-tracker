@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
+ENV ASPNETCORE_URLS=http://*:5000
 WORKDIR /app
-COPY publish/rbl-tracker.dll /app/rbl-tracker.dll
+COPY publish/ .
 EXPOSE 5000
 ENTRYPOINT ["dotnet", "rbl-tracker.dll"]

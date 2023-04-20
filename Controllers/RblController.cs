@@ -6,7 +6,6 @@ namespace rbl_tracker.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [AutoValidateAntiforgeryToken]
     public class RblController : ControllerBase
     {
         private readonly IRblService _rblService;
