@@ -4,9 +4,10 @@ variables:
   CONTAINER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
 
 cache:
-  key: $CI_COMMIT_REF_SLUG
+  key: $CI_COMMIT_SHORT_SHA
   paths:
     - Dockerfile
+    - publish/
 
 workflow:
   rules:
@@ -28,10 +29,6 @@ build application:
   script:
     - dotnet restore
     - dotnet publish -c Release -o publish/
-  artifacts:
-    paths:
-      - publish/rbl-tracker.dll
-    expire_in: 1 hour
   tags:
     - docker
     - contabo
