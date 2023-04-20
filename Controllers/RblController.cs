@@ -37,7 +37,7 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> UpdateRbl(UpdateRblDto updatedRbl)
         {
             var response = await _rblService.UpdateRbl(updatedRbl);
-            if (response.Success is false) 
+            if (response.Success is false)
                 return NotFound(response);
 
             return Ok(response);
@@ -47,7 +47,7 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Delete(Guid id)
         {
             var response = await _rblService.DeleteRbl(id);
-            if (response.Success is false) 
+            if (response.Success is false)
                 return NotFound(response);
 
             return Ok(response);
