@@ -478,3 +478,6 @@ $RECYCLE.BIN/
 
 # Visual Studio Code
 .vscode
+
+# Ignore sqlite
+Db/*.db*
