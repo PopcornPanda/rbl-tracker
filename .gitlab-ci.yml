@@ -28,7 +28,7 @@ build application:
   stage: build
   script:
     - dotnet restore
-    - dotnet publish -c Release -o publish/
+    - dotnet publish -c Release -o publish/ --os alpine
   tags:
     - docker
     - contabo
