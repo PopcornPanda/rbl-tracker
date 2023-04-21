@@ -1,5 +1,5 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
-ENV ASPNETCORE_URLS=http://*:5000
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
+ENV ASPNETCORE_URLS=http://*:5000 DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP3SUPPORT=1 DOTNET_EnableDiagnostics=0 DOTNET_CLI_TELEMETRY_OPTOUT=1
 WORKDIR /app
 COPY publish/ .
 EXPOSE 5000
