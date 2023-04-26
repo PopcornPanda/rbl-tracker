@@ -20,12 +20,12 @@ stages:
   - docker
   - publish image
 
-build application:
+.build:
   image: mcr.microsoft.com/dotnet/sdk:7.0
   stage: build
   script:
     - dotnet restore
-    - dotnet publish -c Release -o publish/ --os alpine
+    - dotnet publish -c Release -o publish/ --os alpine --arch ${ARCH}
   artifacts:
     untracked: false
     when: on_success
@@ -33,9 +33,6 @@ build application:
     paths:
       - Dockerfile
       - publish/
-  tags:
-    - docker
-    - x86
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: always
@@ -51,8 +48,6 @@ build application:
   stage: docker
   variables:
     GIT_STRATEGY: none
-  needs:
-    - build application
   before_script:
     - - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   script:
@@ -65,10 +60,30 @@ build application:
       --cache-ttl=48h
       --customPlatform=linux/${ARCH}
 
+build amd64 application:
+  extends: .build
+  variables:
+    ARCH: "x64"
+  tags:
+  - docker
+  - x86
+
+build arm64 application:
+  extends: .build
+  variables:
+    ARCH: "arm64"
+  tags:
+  - docker
+  - arm64
+
 build amd64 image:
   extends: .docker
   variables:
     ARCH: "amd64"
+  needs:
+    - build amd64 application
+  dependencies:
+    - build amd64 application
   tags:
     - docker
     - x86  
@@ -77,9 +92,13 @@ build arm64 image:
   extends: .docker
   variables:
     ARCH: "arm64"
+  needs:
+    - build arm64 application
+  dependencies:
+    - build arm64 application
   tags:
     - docker
-    - x86 
+    - arm64 
 
 make multi-arch:
   image: docker:23.0.4
