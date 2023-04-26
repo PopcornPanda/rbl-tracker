@@ -85,7 +85,6 @@ make multi-arch:
   stage: publish image
   variables:
     GIT_STRATEGY: none
-    DOCKER_HOST: tcp://localhost:2375/
   needs:
     - build x86 image
     - build arm64 image
@@ -104,7 +103,6 @@ tag release image:
   stage: publish image
   variables:
     GIT_STRATEGY: none
-    DOCKER_HOST: tcp://localhost:2375/
   needs:
     - build x86 image
   before_script:
