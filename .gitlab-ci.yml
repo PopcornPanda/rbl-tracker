@@ -3,12 +3,6 @@ variables:
   CONTAINER_DEV_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
   CONTAINER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
 
-cache:
-  key: $CI_COMMIT_SHORT_SHA
-  paths:
-    - Dockerfile
-    - publish/
-
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
@@ -22,6 +16,7 @@ workflow:
 stages:
   - build
   - docker
+  - publish image
 
 build application:
   image: mcr.microsoft.com/dotnet/sdk:7.0
@@ -29,9 +24,16 @@ build application:
   script:
     - dotnet restore
     - dotnet publish -c Release -o publish/ --os alpine
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: 1 hour
+    paths:
+      - Dockerfile
+      - publish/
   tags:
     - docker
-    - contabo
+    - x86
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: always
@@ -40,7 +42,7 @@ build application:
     - if: $CI_COMMIT_TAG =~ "/^$/" && $CI_PIPELINE_SOURCE != 'merge_request_event'
       when: manual
 
-build dev image:
+.docker:
   image:
     name: gcr.io/kaniko-project/executor:v1.9.2-debug
     entrypoint: [""]
@@ -55,22 +57,52 @@ build dev image:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${CONTAINER_DEV_IMAGE}"
+      --destination "${CONTAINER_DEV_IMAGE}-${ARCH}"
       --use-new-run
       --cache=true
       --cache-ttl=48h
 
+build x86 image:
+  extends: .docker
+  variables:
+    ARCH: "x86"
   tags:
     - docker
-    - contabo
+    - x86  
 
-tag release image:
+build arm64 image:
+  extends: .docker
+  variables:
+    ARCH: "arm64"
+  tags:
+    - docker
+    - x86 
+
+make multiarch:
   image: docker:23.0.4
-  stage: docker
+  stage: publish image
   variables:
     GIT_STRATEGY: none
   needs:
-    - build dev image
+    - build x86 image
+    - build arm64 image
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker manifest create ${CONTAINER_DEV_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-x86 --amend ${CONTAINER_DEV_IMAGE}-arm64
+    - docker manifest push ${CONTAINER_RELEASE_IMAGE}
+  tags:
+    - docker
+    - x86
+
+tag release image:
+  image: docker:23.0.4
+  stage: publish image
+  variables:
+    GIT_STRATEGY: none
+  needs:
+    - build x86 image
   before_script:
     - docker info
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -79,6 +111,6 @@ tag release image:
     - docker push ${CONTAINER_RELEASE_IMAGE}
   tags:
     - docker
-    - contabo
+    - x86
   only:
     - tags
