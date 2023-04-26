@@ -80,7 +80,7 @@ build arm64 image:
     - docker
     - x86 
 
-make multiarch:
+make multi-arch:
   image: docker:23.0.4
   stage: publish image
   variables:
