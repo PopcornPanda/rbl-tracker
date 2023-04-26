@@ -89,11 +89,10 @@ make multi-arch:
     - build x86 image
     - build arm64 image
   before_script:
-    - docker info
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker manifest create ${CONTAINER_DEV_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-x86 --amend ${CONTAINER_DEV_IMAGE}-arm64
-    - docker manifest push ${CONTAINER_RELEASE_IMAGE}
+    - docker manifest push ${CONTAINER_DEV_IMAGE}
   tags:
     - docker
     - x86
@@ -106,7 +105,6 @@ tag release image:
   needs:
     - build x86 image
   before_script:
-    - docker info
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker tag ${CONTAINER_DEV_IMAGE} ${CONTAINER_RELEASE_IMAGE}
