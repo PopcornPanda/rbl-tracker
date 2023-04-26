@@ -69,6 +69,14 @@ namespace rbl_tracker.Services.RblServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<GetRblDto>> GetRblByName(string name)
+        {
+            var serviceResponse = new ServiceResponse<GetRblDto>();
+            var rbls = await _context.Rbls.ToListAsync();
+            serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Name == name));
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetRblDto>> UpdateRbl(UpdateRblDto updatedRbl)
         {
             var serviceResponse = new ServiceResponse<GetRblDto>();
@@ -84,6 +92,7 @@ namespace rbl_tracker.Services.RblServices
                 rbl.Type = updatedRbl.Type;
                 rbl.Level = updatedRbl.Level;
                 rbl.DelistUrl = updatedRbl.DelistUrl;
+                rbl.UpdateTime = updatedRbl.UpdateTime;
 
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetRblDto>(rbl);

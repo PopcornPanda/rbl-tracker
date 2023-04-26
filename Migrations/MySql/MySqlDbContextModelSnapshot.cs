@@ -19,6 +19,66 @@ namespace rbl_tracker.Migrations.MySql
                 .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Domains");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid?>("OwnerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Ips");
+                });
+
             modelBuilder.Entity("rbl_tracker.Models.Rbl", b =>
                 {
                     b.Property<Guid>("Id")
@@ -28,6 +88,9 @@ namespace rbl_tracker.Migrations.MySql
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("DelistUrl")
                         .IsRequired()
@@ -43,9 +106,70 @@ namespace rbl_tracker.Migrations.MySql
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.ToTable("Rbls");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<long>("CreateTime")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<byte[]>("PaswordHash")
+                        .IsRequired()
+                        .HasColumnType("longblob");
+
+                    b.Property<byte[]>("PaswordSalt")
+                        .IsRequired()
+                        .HasColumnType("longblob");
+
+                    b.Property<long>("UpdateTime")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+                {
+                    b.HasOne("rbl_tracker.Models.User", "Owner")
+                        .WithMany("Domains")
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
+                {
+                    b.HasOne("rbl_tracker.Models.User", "Owner")
+                        .WithMany("Ips")
+                        .HasForeignKey("OwnerId");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.User", b =>
+                {
+                    b.Navigation("Domains");
+
+                    b.Navigation("Ips");
                 });
 #pragma warning restore 612, 618
         }

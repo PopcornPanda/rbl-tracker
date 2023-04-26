@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using rbl_tracker.Data;
 
@@ -11,9 +12,11 @@ using rbl_tracker.Data;
 namespace rbl_tracker.Migrations.MsSql
 {
     [DbContext(typeof(MsSqlDbContext))]
-    partial class MsSqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230426184800_DomainsAndIps")]
+    partial class DomainsAndIps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,18 +35,12 @@ namespace rbl_tracker.Migrations.MsSql
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -62,18 +59,12 @@ namespace rbl_tracker.Migrations.MsSql
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -92,9 +83,6 @@ namespace rbl_tracker.Migrations.MsSql
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("DelistUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -109,9 +97,6 @@ namespace rbl_tracker.Migrations.MsSql
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.ToTable("Rbls");
@@ -123,13 +108,6 @@ namespace rbl_tracker.Migrations.MsSql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<byte[]>("PaswordHash")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -137,9 +115,6 @@ namespace rbl_tracker.Migrations.MsSql
                     b.Property<byte[]>("PaswordSalt")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Username")
                         .IsRequired()

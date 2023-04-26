@@ -2,6 +2,8 @@ global using rbl_tracker.Data;
 global using rbl_tracker.Models;
 global using Microsoft.EntityFrameworkCore;
 using rbl_tracker.Services.RblServices;
+using rbl_tracker.Services.IpServices;
+using rbl_tracker.Services.DomainServices;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 
@@ -57,6 +59,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IRblService, RblService>();
+builder.Services.AddScoped<IIpService, IpService>();
+builder.Services.AddScoped<IDomainService, DomainService>();
+builder.Services.AddScoped<IAuth, Auth>();
 
 // generate lowercase URLs
 builder.Services.Configure<RouteOptions>(options =>

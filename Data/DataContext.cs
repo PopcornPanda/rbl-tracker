@@ -18,6 +18,9 @@ namespace rbl_tracker.Data
         }
 
         public DbSet<Rbl> Rbls => Set<Rbl>();
+        public DbSet<Ip> Ips => Set<Ip>();
+        public DbSet<Domain> Domains => Set<Domain>();
+        public DbSet<User> Users => Set<User>();
 
         protected void ApplyConfiguration(ModelBuilder modelBuilder, string[] namespaces)
         {
