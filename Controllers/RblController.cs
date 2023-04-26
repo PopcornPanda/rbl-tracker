@@ -22,9 +22,15 @@ namespace rbl_tracker.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> GetSingle(Guid id)
+        public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> GetById(Guid id)
         {
             return Ok(await _rblService.GetRblById(id));
+        }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> GetByName(string name)
+        {
+            return Ok(await _rblService.GetRblByName(name));
         }
 
         [HttpPost]
