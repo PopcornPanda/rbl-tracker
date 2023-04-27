@@ -1,6 +1,7 @@
 using rbl_tracker.Dtos.Rbl;
 using rbl_tracker.Services.RblServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace rbl_tracker.Controllers
 {
@@ -33,12 +34,14 @@ namespace rbl_tracker.Controllers
             return Ok(await _rblService.GetRblByName(name));
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> AddRbl(NewRblDto newRbl)
         {
             return Ok(await _rblService.AddRbl(newRbl));
         }
 
+        [Authorize]
         [HttpPut]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> UpdateRbl(UpdateRblDto updatedRbl)
         {
@@ -48,7 +51,7 @@ namespace rbl_tracker.Controllers
 
             return Ok(response);
         }
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Delete(Guid id)
         {

@@ -1,9 +1,12 @@
 using rbl_tracker.Dtos.Ip;
 using rbl_tracker.Services.IpServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace rbl_tracker.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class IpController : ControllerBase
@@ -18,7 +21,8 @@ namespace rbl_tracker.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetIpDto>>>> Get()
         {
-            return Ok(await _ipService.GetAllIps());
+            Guid id = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value);
+            return Ok(await _ipService.GetAllIps(id));
         }
 
         [HttpGet("{id}")]
@@ -31,12 +35,6 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetIpDto>>>> GetByName(string name)
         {
             return Ok(await _ipService.GetIpByName(name));
-        }
-
-        [HttpGet("{owner}")]
-        public async Task<ActionResult<ServiceResponse<List<GetIpDto>>>> GetByOwner(User owner)
-        {
-            return Ok(await _ipService.GetIpByOwner(owner));
         }
 
         [HttpPost]

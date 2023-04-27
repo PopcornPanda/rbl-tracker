@@ -6,12 +6,15 @@ using rbl_tracker.Services.IpServices;
 using rbl_tracker.Services.DomainServices;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-switch (builder.Configuration["DatabaseProvider"])
+switch (builder.Configuration["AppSettings:DatabaseProvider"])
 {
     case DbProviderType.MsSql:
         builder.Services.AddDbContext<DataContext, MsSqlDbContext>();
@@ -23,14 +26,15 @@ switch (builder.Configuration["DatabaseProvider"])
         builder.Services.AddHealthChecks().AddDbContextCheck<PostgreDbContext>();
         break;
 
-    case DbProviderType.Sqlite:
-        builder.Services.AddDbContext<DataContext, SqliteDbContext>();
-        builder.Services.AddHealthChecks().AddDbContextCheck<SqliteDbContext>();
-        break;
-
     case DbProviderType.MySql:
         builder.Services.AddDbContext<DataContext, MySqlDbContext>();
         builder.Services.AddHealthChecks().AddDbContextCheck<MySqlDbContext>();
+        break;
+    
+    case DbProviderType.Sqlite:
+    default:
+        builder.Services.AddDbContext<DataContext, SqliteDbContext>();
+        builder.Services.AddHealthChecks().AddDbContextCheck<SqliteDbContext>();
         break;
 }
 
@@ -56,12 +60,32 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("https://mit-license.org/")
         }
     });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme {
+        Description = """Standard Auth header: "bearer {token}" """,
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+
 });
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IRblService, RblService>();
 builder.Services.AddScoped<IIpService, IpService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
 builder.Services.AddScoped<IAuth, Auth>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => 
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                    .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!)),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+    });
 
 // generate lowercase URLs
 builder.Services.Configure<RouteOptions>(options =>
@@ -96,6 +120,8 @@ app.MapHealthChecks("/healthz", new HealthCheckOptions
 
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

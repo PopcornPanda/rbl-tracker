@@ -21,7 +21,7 @@ namespace rbl_tracker.Services.DomainServices
             await _context.SaveChangesAsync();
 
             serviceResponse.Data =
-                await _context.Domains.Select(r => _mapper.Map<GetDomainDto>(r)).ToListAsync();
+                await _context.Domains.Select(d => _mapper.Map<GetDomainDto>(d)).ToListAsync();
 
             return serviceResponse;
         }
@@ -32,7 +32,7 @@ namespace rbl_tracker.Services.DomainServices
 
             try
             {
-                var domain = await _context.Domains.FirstOrDefaultAsync(r => r.Id == id);
+                var domain = await _context.Domains.FirstOrDefaultAsync(d => d.Id == id);
                 if (domain is null)
                     throw new Exception($"Domain with Id '{id}' not found");
 
@@ -40,7 +40,7 @@ namespace rbl_tracker.Services.DomainServices
                 await _context.SaveChangesAsync();
 
                 serviceResponse.Data = await
-                    _context.Domains.Select(r => _mapper.Map<GetDomainDto>(r)).ToListAsync();
+                    _context.Domains.Select(d => _mapper.Map<GetDomainDto>(d)).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -51,12 +51,12 @@ namespace rbl_tracker.Services.DomainServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains()
+        public async Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains(Guid ownerId)
         {
             var serviceResponse = new ServiceResponse<List<GetDomainDto>>();
-
+            var domains = await _context.Ips.Where(d => d.Owner!.Id == ownerId).ToListAsync();
             serviceResponse.Data =
-                await _context.Domains.Select(r => _mapper.Map<GetDomainDto>(r)).ToListAsync();
+                domains.Select(d => _mapper.Map<GetDomainDto>(d)).ToList();
 
             return serviceResponse;
         }
@@ -65,7 +65,7 @@ namespace rbl_tracker.Services.DomainServices
         {
             var serviceResponse = new ServiceResponse<GetDomainDto>();
             var domains = await _context.Domains.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetDomainDto>(domains.FirstOrDefault(r => r.Id == id));
+            serviceResponse.Data = _mapper.Map<GetDomainDto>(domains.FirstOrDefault(d => d.Id == id));
             return serviceResponse;
         }
 
@@ -73,18 +73,9 @@ namespace rbl_tracker.Services.DomainServices
         {
             var serviceResponse = new ServiceResponse<GetDomainDto>();
             var domains = await _context.Domains.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetDomainDto>(domains.FirstOrDefault(r => r.Name == name));
+            serviceResponse.Data = _mapper.Map<GetDomainDto>(domains.FirstOrDefault(d => d.Name == name));
             return serviceResponse;
         }
-
-        public async Task<ServiceResponse<List<GetDomainDto>>> GetDomainByOwner(User user)
-        {
-            var serviceResponse = new ServiceResponse<List<GetDomainDto>>();
-            var domains = await _context.Domains.ToListAsync();
-            serviceResponse.Data = _mapper.Map<List<GetDomainDto>>(domains.Select(r => r.Owner == user));
-            return serviceResponse;
-        }
-
 
         public async Task<ServiceResponse<GetDomainDto>> UpdateDomain(UpdateDomainDto updatedDomain)
         {
@@ -92,7 +83,7 @@ namespace rbl_tracker.Services.DomainServices
 
             try
             {
-                var domain = await _context.Domains.FirstOrDefaultAsync(r => r.Id == updatedDomain.Id);
+                var domain = await _context.Domains.FirstOrDefaultAsync(d => d.Id == updatedDomain.Id);
                 if (domain is null)
                     throw new Exception($"Domain with Id '{updatedDomain.Id}' not found");
 
