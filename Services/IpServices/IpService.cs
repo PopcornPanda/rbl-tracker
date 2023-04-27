@@ -21,7 +21,7 @@ namespace rbl_tracker.Services.IpServices
             await _context.SaveChangesAsync();
 
             serviceResponse.Data =
-                await _context.Ips.Select(r => _mapper.Map<GetIpDto>(r)).ToListAsync();
+                await _context.Ips.Select(i => _mapper.Map<GetIpDto>(i)).ToListAsync();
 
             return serviceResponse;
         }
@@ -32,7 +32,7 @@ namespace rbl_tracker.Services.IpServices
 
             try
             {
-                var ip = await _context.Ips.FirstOrDefaultAsync(r => r.Id == id);
+                var ip = await _context.Ips.FirstOrDefaultAsync(i => i.Id == id);
                 if (ip is null)
                     throw new Exception($"Ip with Id '{id}' not found");
 
@@ -40,7 +40,7 @@ namespace rbl_tracker.Services.IpServices
                 await _context.SaveChangesAsync();
 
                 serviceResponse.Data = await
-                    _context.Ips.Select(r => _mapper.Map<GetIpDto>(r)).ToListAsync();
+                    _context.Ips.Select(i => _mapper.Map<GetIpDto>(i)).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -51,12 +51,12 @@ namespace rbl_tracker.Services.IpServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetIpDto>>> GetAllIps()
+        public async Task<ServiceResponse<List<GetIpDto>>> GetAllIps(Guid ownerId)
         {
             var serviceResponse = new ServiceResponse<List<GetIpDto>>();
-
+            var ips = await _context.Ips.Where(i => i.Owner!.Id == ownerId).ToListAsync();
             serviceResponse.Data =
-                await _context.Ips.Select(r => _mapper.Map<GetIpDto>(r)).ToListAsync();
+                ips.Select(i => _mapper.Map<GetIpDto>(i)).ToList();
 
             return serviceResponse;
         }
@@ -65,7 +65,7 @@ namespace rbl_tracker.Services.IpServices
         {
             var serviceResponse = new ServiceResponse<GetIpDto>();
             var ips = await _context.Ips.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetIpDto>(ips.FirstOrDefault(r => r.Id == id));
+            serviceResponse.Data = _mapper.Map<GetIpDto>(ips.FirstOrDefault(i => i.Id == id));
             return serviceResponse;
         }
 
@@ -73,15 +73,7 @@ namespace rbl_tracker.Services.IpServices
         {
             var serviceResponse = new ServiceResponse<GetIpDto>();
             var ips = await _context.Ips.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetIpDto>(ips.FirstOrDefault(r => r.Name == name));
-            return serviceResponse;
-        }
-
-        public async Task<ServiceResponse<List<GetIpDto>>> GetIpByOwner(User user)
-        {
-            var serviceResponse = new ServiceResponse<List<GetIpDto>>();
-            var ips = await _context.Ips.ToListAsync();
-            serviceResponse.Data = _mapper.Map<List<GetIpDto>>(ips.Select(r => r.Owner == user));
+            serviceResponse.Data = _mapper.Map<GetIpDto>(ips.FirstOrDefault(i => i.Name == name));
             return serviceResponse;
         }
 
@@ -92,14 +84,14 @@ namespace rbl_tracker.Services.IpServices
 
             try
             {
-                var ip = await _context.Ips.FirstOrDefaultAsync(r => r.Id == updatedIp.Id);
+                var ip = await _context.Ips.FirstOrDefaultAsync(i => i.Id == updatedIp.Id);
                 if (ip is null)
                     throw new Exception($"Ip with Id '{updatedIp.Id}' not found");
 
                 ip.Name = updatedIp.Name;
                 ip.Address = updatedIp.Address;
                 ip.Owner = updatedIp.Owner;
-                ip.UpdateTime = updatedIp.UpdateTime;
+                ip.UpdateTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetIpDto>(ip);

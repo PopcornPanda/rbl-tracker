@@ -1,9 +1,12 @@
 using rbl_tracker.Dtos.Domain;
 using rbl_tracker.Services.DomainServices;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace rbl_tracker.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DomainController : ControllerBase
@@ -18,7 +21,8 @@ namespace rbl_tracker.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetDomainDto>>>> Get()
         {
-            return Ok(await _domainService.GetAllDomains());
+            Guid id = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value);
+            return Ok(await _domainService.GetAllDomains(id));
         }
 
         [HttpGet("{id}")]
@@ -31,12 +35,6 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetDomainDto>>>> GetByName(string name)
         {
             return Ok(await _domainService.GetDomainByName(name));
-        }
-
-        [HttpGet("{owner}")]
-        public async Task<ActionResult<ServiceResponse<List<GetDomainDto>>>> GetByOwner(User owner)
-        {
-            return Ok(await _domainService.GetDomainByOwner(owner));
         }
 
         [HttpPost]

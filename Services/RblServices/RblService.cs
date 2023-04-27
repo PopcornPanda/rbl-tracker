@@ -92,7 +92,7 @@ namespace rbl_tracker.Services.RblServices
                 rbl.Type = updatedRbl.Type;
                 rbl.Level = updatedRbl.Level;
                 rbl.DelistUrl = updatedRbl.DelistUrl;
-                rbl.UpdateTime = updatedRbl.UpdateTime;
+                rbl.UpdateTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
 
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetRblDto>(rbl);

@@ -1,10 +1,16 @@
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+
 namespace rbl_tracker.Data
 {
     public class Auth : IAuth
     {
         private readonly DataContext _context;
-        public Auth(DataContext context)
+        private readonly IConfiguration _configuration;
+        public Auth(DataContext context, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
 
         }
@@ -22,7 +28,7 @@ namespace rbl_tracker.Data
             else
             {
 
-                response.Data = user.Id.ToString();
+                response.Data = CreateToken(user);
             }
             return response;
 
@@ -72,6 +78,37 @@ namespace rbl_tracker.Data
                 var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(passwowrd));
                 return computedHash.SequenceEqual(passwordHash);
             }
+        }
+
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+
+            var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;
+            if (appSettingsToken is null)
+            {
+                throw new Exception("AppSettings Token is null!");
+            }
+
+            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(appSettingsToken));
+
+            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = credentials
+            };
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace rbl_tracker.Controllers
                 return BadRequest(response);
             }
 
-            return Ok();
+            return Ok(response);
         } 
 
         [HttpPost("Login")]
@@ -38,7 +38,7 @@ namespace rbl_tracker.Controllers
                 return BadRequest(response);
             }
 
-            return Ok();
+            return Ok(response);
         } 
     }
 }
