@@ -48,6 +48,9 @@ namespace rbl_tracker.Data
             user.PaswordHash = passwordHash;
             user.PaswordSalt = passwordSalt;
 
+            user.CreateTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+            user.UpdateTime = user.CreateTime;
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             response.Data = user.Id;
@@ -85,7 +88,8 @@ namespace rbl_tracker.Data
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             var appSettingsToken = _configuration.GetSection("AppSettings:Token").Value;

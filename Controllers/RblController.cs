@@ -15,7 +15,7 @@ namespace rbl_tracker.Controllers
         {
             _rblService = rblService;
         }
-
+        
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Get()
         {
@@ -34,14 +34,14 @@ namespace rbl_tracker.Controllers
             return Ok(await _rblService.GetRblByName(name));
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> AddRbl(NewRblDto newRbl)
         {
             return Ok(await _rblService.AddRbl(newRbl));
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> UpdateRbl(UpdateRblDto updatedRbl)
         {
@@ -51,7 +51,7 @@ namespace rbl_tracker.Controllers
 
             return Ok(response);
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Delete(Guid id)
         {
