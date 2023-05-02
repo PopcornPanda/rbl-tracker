@@ -2,48 +2,46 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using rbl_tracker.Data;
 
 #nullable disable
 
-namespace rbl_tracker.Migrations.PostgreSql
+namespace rbl_tracker.Migrations.Sqlite
 {
-    [DbContext(typeof(PostgreDbContext))]
-    partial class PostgreDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(SqliteDbContext))]
+    [Migration("20230502200449_InitialRblSeeding")]
+    partial class InitialRblSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
 
             modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("OwnerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -56,24 +54,24 @@ namespace rbl_tracker.Migrations.PostgreSql
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("OwnerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -86,31 +84,31 @@ namespace rbl_tracker.Migrations.PostgreSql
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("DelistUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Level")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -119,201 +117,201 @@ namespace rbl_tracker.Migrations.PostgreSql
                     b.HasData(
                         new
                         {
-                            Id = new Guid("73661c5c-5ce0-4906-a55b-b40baf17244b"),
+                            Id = new Guid("25363bd8-9ccd-4cca-9ca8-ee5c3292c10a"),
                             Address = "bl.spamcop.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://www.spamcop.net/bl.shtml",
                             Level = 1,
                             Name = "SpamCop",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("4e505ee8-8e71-446e-8e4f-bf86c1e6aa20"),
+                            Id = new Guid("7e3a36da-805f-48a8-8258-6fc12063a69a"),
                             Address = "0spam.fusionzero.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://check.0spam.org/q/?ipaddr=ADDRESS",
                             Level = 1,
                             Name = "0 Spam",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("9aed00c2-bb77-40eb-ab4f-68a44bde02a0"),
+                            Id = new Guid("e55e68ce-d168-4758-bb81-cb142ca855f0"),
                             Address = "url.0spam.org",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://check.0spam.org/q/?ipaddr=ADDRESS",
                             Level = 1,
                             Name = "0 Spam",
                             Type = 1,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("00872c29-f6dc-44e5-911d-b577224cafcb"),
+                            Id = new Guid("1ec69a97-8e89-474b-a3f4-70f8b1b0cf36"),
                             Address = "ips.backscatterer.org",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.backscatterer.org/?target=test",
                             Level = 2,
                             Name = "backscatterer",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("e022aa9f-4ef1-44ae-bd79-96df797c491d"),
+                            Id = new Guid("61402f86-ce84-4420-8677-0d36869d937d"),
                             Address = "combined.abuse.ch",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://abuse.ch/?p=532",
                             Level = 1,
                             Name = "Abuse.ch",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("4537a36c-9a2c-4d04-837b-47683e265bee"),
+                            Id = new Guid("8ff63fd1-6eb1-4dc6-b227-e1130f6513b2"),
                             Address = "zen.spamhaus.org",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.spamhaus.org/zen/",
                             Level = 2,
                             Name = "Spamhaus",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("b2e7a88f-b654-4e56-9f10-4502b26112cf"),
+                            Id = new Guid("cbe198b7-ecba-4ad4-b46b-8d5aa4ac5792"),
                             Address = "spam.spamrats.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://www.spamrats.com/lookup.php?ip=ADDRESS",
                             Level = 0,
                             Name = "Spam Rats",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("43531f76-b08d-4c91-8f2e-835254d8aacf"),
+                            Id = new Guid("d3766e99-258d-418a-9f6a-61c8188e91b5"),
                             Address = "b.barracudacentral.org",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://barracudacentral.org/rbl",
                             Level = 1,
                             Name = "Barracuda",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("16e976bd-3685-4a77-8c7e-65848fe88b96"),
+                            Id = new Guid("410d37b5-af93-4a55-950d-7b0ab7c9a509"),
                             Address = "ix.dnsbl.manitu.net",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://www.nixspam.net/lookup.php?language=en&value=ADDRESS",
                             Level = 1,
                             Name = "Manitu",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("35a05f7e-ff72-4a5b-a1be-6266f3dac968"),
+                            Id = new Guid("9a22b604-02d3-42e5-a2ea-30f585cd2426"),
                             Address = "spam.dnsbl.sorbs.net",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "Spam Sorbs",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("9156cb7e-fad2-443b-80d3-fd56b39783e1"),
+                            Id = new Guid("858b09da-10bf-4500-a492-d7a7466b68d5"),
                             Address = "smtp.dnsbl.sorbs.net",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "SMTP Relay Sorbs",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("1bee07c1-4823-40a7-aa7c-42a0add5a459"),
+                            Id = new Guid("894eada3-58c2-45fd-9547-c8a26f6ac602"),
                             Address = "web.dnsbl.sorbs.net",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "Web Sorbs",
                             Type = 1,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("3b180774-bc85-4b4f-b2c9-3283a92d7552"),
+                            Id = new Guid("ccd62597-015d-41f6-84d5-fc60bd47dd49"),
                             Address = "spam.dnsbl.anonmails.de",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://anonmails.de/dnsbl.php?ip=ADDRESS",
                             Level = 1,
                             Name = "Annonmails.de",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("2878c8ec-231e-4222-98fb-551cd2036392"),
+                            Id = new Guid("6e12df9a-4f9b-4161-85c5-7d76bc53f929"),
                             Address = "ubl.lashback.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://blacklist.lashback.com/?ipAddress=ADDRESS",
                             Level = 3,
                             Name = "Lashback",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("b1e9323f-96e8-4551-ab2d-cf428d6146ce"),
+                            Id = new Guid("4c851d31-79ed-4718-ad71-574db9b24dec"),
                             Address = "z.mailspike.net",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://mailspike.org/iplookup.html",
                             Level = 1,
                             Name = "Mailspike",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("bdcce912-0759-4ef9-a3fe-68f30295e424"),
+                            Id = new Guid("5dc4fccf-4ac5-4765-9498-b42cc8562da5"),
                             Address = "cbl.abuseat.org",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "http://www.abuseat.org",
                             Level = 1,
                             Name = "Abuseeat",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("a4061957-f454-41b4-83a2-e0efe0fc6a1e"),
+                            Id = new Guid("56619a78-7ca1-4a20-aae9-50b5fc609fed"),
                             Address = "psbl.surriel.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://psbl.org/listing?ip=ADDRESS",
                             Level = 1,
                             Name = "PSBL Surriel",
                             Type = 0,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         },
                         new
                         {
-                            Id = new Guid("ed2ca11e-379b-465c-af77-c27af459e4e8"),
+                            Id = new Guid("1189efdb-655f-4c22-9f86-f511ebbd0b7c"),
                             Address = "bl.rspamd.com",
-                            CreateTime = 1683057886L,
+                            CreateTime = 1683057889L,
                             DelistUrl = "https://bl.rspamd.com/",
                             Level = 1,
                             Name = "RBL Rspamd",
                             Type = 1,
-                            UpdateTime = 1683057886L
+                            UpdateTime = 1683057889L
                         });
                 });
 
@@ -321,32 +319,32 @@ namespace rbl_tracker.Migrations.PostgreSql
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<byte[]>("PaswordHash")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("BLOB");
 
                     b.Property<byte[]>("PaswordSalt")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("BLOB");
 
                     b.Property<int>("Role")
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

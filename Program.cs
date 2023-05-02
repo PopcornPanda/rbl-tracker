@@ -87,6 +87,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
     });
 
+builder.Services.AddHttpContextAccessor();
+
 // generate lowercase URLs
 builder.Services.Configure<RouteOptions>(options =>
 {
