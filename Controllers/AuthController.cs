@@ -7,8 +7,8 @@ namespace rbl_tracker.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuth _authRepo;
-        public AuthController(IAuth authRepo)
+        private readonly IAuthService _authRepo;
+        public AuthController(IAuthService authRepo)
         {
             _authRepo = authRepo;
             

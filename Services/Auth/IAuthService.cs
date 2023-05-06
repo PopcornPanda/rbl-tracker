@@ -1,6 +1,6 @@
 namespace rbl_tracker.Data
 {
-    public interface IAuth
+    public interface IAuthService
     {
         Task<ServiceResponse<Guid>> Register(User user, string passwowrd);
         Task<ServiceResponse<string>> Login(string username, string passwowrd);
