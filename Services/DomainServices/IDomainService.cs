@@ -3,7 +3,7 @@ namespace rbl_tracker.Services.DomainServices
 {
     public interface IDomainService
     {
-        Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains(Guid ownerId);
+        Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains();
         Task<ServiceResponse<GetDomainDto>> GetDomainById(Guid id);
         Task<ServiceResponse<GetDomainDto>> GetDomainByName(string name);
         Task<ServiceResponse<List<GetDomainDto>>> AddDomain(NewDomainDto newDomain);

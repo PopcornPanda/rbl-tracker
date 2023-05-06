@@ -36,7 +36,10 @@ namespace rbl_tracker.Data
                 new Rbl { Name = "Mailspike", Address = "z.mailspike.net", Type = RblType.Rbl, Level = RblLevel.Normal, DelistUrl = "https://mailspike.org/iplookup.html"},
                 new Rbl { Name = "Abuseeat", Address = "cbl.abuseat.org", Type = RblType.Rbl, Level = RblLevel.Normal, DelistUrl = "http://www.abuseat.org"},
                 new Rbl { Name = "PSBL Surriel", Address = "psbl.surriel.com", Type = RblType.Rbl, Level = RblLevel.Normal, DelistUrl = "https://psbl.org/listing?ip=ADDRESS"},
-                new Rbl { Name = "RBL Rspamd", Address = "bl.rspamd.com", Type = RblType.Surbl, Level = RblLevel.Normal, DelistUrl = "https://bl.rspamd.com/"}
+                new Rbl { Name = "RBL Rspamd", Address = "bl.rspamd.com", Type = RblType.Surbl, Level = RblLevel.Normal, DelistUrl = "https://bl.rspamd.com/"},
+                new Rbl { Name = "UCEPROTECTL1", Address = "dnsbl-1.uceprotect.net", Type = RblType.Rbl, Level = RblLevel.High, DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS"},
+                new Rbl { Name = "UCEPROTECTL2", Address = "dnsbl-2.uceprotect.net", Type = RblType.Rbl, Level = RblLevel.High, DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS"},
+                new Rbl { Name = "UCEPROTECTL3", Address = "dnsbl-3.uceprotect.net", Type = RblType.Rbl, Level = RblLevel.High, DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS"}
             );
         }
 
@@ -44,6 +47,7 @@ namespace rbl_tracker.Data
         public DbSet<Ip> Ips => Set<Ip>();
         public DbSet<Domain> Domains => Set<Domain>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<CheckRblHistory> CheckRblHistory => Set<CheckRblHistory>();
 
         protected void ApplyConfiguration(ModelBuilder modelBuilder, string[] namespaces)
         {

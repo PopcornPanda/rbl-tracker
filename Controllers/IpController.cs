@@ -21,8 +21,7 @@ namespace rbl_tracker.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetIpDto>>>> Get()
         {
-            Guid id = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value);
-            return Ok(await _ipService.GetAllIps(id));
+            return Ok(await _ipService.GetAllIps());
         }
 
         [HttpGet("{id}")]

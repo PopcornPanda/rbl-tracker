@@ -63,7 +63,7 @@ namespace rbl_tracker.Services.DomainServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains(Guid ownerId)
+        public async Task<ServiceResponse<List<GetDomainDto>>> GetAllDomains()
         {
             var serviceResponse = new ServiceResponse<List<GetDomainDto>>();
             var domains = await _context.Domains.Include(d => d.Owner)

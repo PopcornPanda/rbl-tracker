@@ -17,6 +17,44 @@ namespace rbl_tracker.Migrations.Sqlite
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
 
+            modelBuilder.Entity("CheckRblHistoryRbl", b =>
+                {
+                    b.Property<Guid>("DetectedHistoryId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RblsId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DetectedHistoryId", "RblsId");
+
+                    b.HasIndex("RblsId");
+
+                    b.ToTable("CheckRblHistoryRbl");
+                });
+
+            modelBuilder.Entity("rbl_tracker.Models.CheckRblHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CheckTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("Domain")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("Ip")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Level")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckRblHistory");
+                });
+
             modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
                 {
                     b.Property<Guid>("Id")
@@ -114,201 +152,234 @@ namespace rbl_tracker.Migrations.Sqlite
                     b.HasData(
                         new
                         {
-                            Id = new Guid("25363bd8-9ccd-4cca-9ca8-ee5c3292c10a"),
+                            Id = new Guid("414f8369-4fe5-4b2c-acc4-9a7219ff5013"),
                             Address = "bl.spamcop.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://www.spamcop.net/bl.shtml",
                             Level = 1,
                             Name = "SpamCop",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("7e3a36da-805f-48a8-8258-6fc12063a69a"),
+                            Id = new Guid("e4c55859-c661-4ee2-81ee-99b6e2677c3d"),
                             Address = "0spam.fusionzero.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://check.0spam.org/q/?ipaddr=ADDRESS",
                             Level = 1,
                             Name = "0 Spam",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("e55e68ce-d168-4758-bb81-cb142ca855f0"),
+                            Id = new Guid("2636439a-b0ae-4477-a6bd-c9feb1975528"),
                             Address = "url.0spam.org",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://check.0spam.org/q/?ipaddr=ADDRESS",
                             Level = 1,
                             Name = "0 Spam",
                             Type = 1,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("1ec69a97-8e89-474b-a3f4-70f8b1b0cf36"),
+                            Id = new Guid("919bfb97-0db7-4f43-9b57-6bf57e1bb658"),
                             Address = "ips.backscatterer.org",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.backscatterer.org/?target=test",
                             Level = 2,
                             Name = "backscatterer",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("61402f86-ce84-4420-8677-0d36869d937d"),
+                            Id = new Guid("066ac7f9-e882-475f-bbfd-8f190e615616"),
                             Address = "combined.abuse.ch",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://abuse.ch/?p=532",
                             Level = 1,
                             Name = "Abuse.ch",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("8ff63fd1-6eb1-4dc6-b227-e1130f6513b2"),
+                            Id = new Guid("553614b0-48d7-4529-a0a4-f95e1b049b79"),
                             Address = "zen.spamhaus.org",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.spamhaus.org/zen/",
                             Level = 2,
                             Name = "Spamhaus",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("cbe198b7-ecba-4ad4-b46b-8d5aa4ac5792"),
+                            Id = new Guid("721b66aa-6534-4119-859f-b9862957393a"),
                             Address = "spam.spamrats.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://www.spamrats.com/lookup.php?ip=ADDRESS",
                             Level = 0,
                             Name = "Spam Rats",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("d3766e99-258d-418a-9f6a-61c8188e91b5"),
+                            Id = new Guid("3f270240-6ffd-4aeb-9edf-2968ebfcb39e"),
                             Address = "b.barracudacentral.org",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://barracudacentral.org/rbl",
                             Level = 1,
                             Name = "Barracuda",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("410d37b5-af93-4a55-950d-7b0ab7c9a509"),
+                            Id = new Guid("68c91dcc-31ed-49a6-b3f6-0cb62c92c443"),
                             Address = "ix.dnsbl.manitu.net",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://www.nixspam.net/lookup.php?language=en&value=ADDRESS",
                             Level = 1,
                             Name = "Manitu",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("9a22b604-02d3-42e5-a2ea-30f585cd2426"),
+                            Id = new Guid("7491c680-a071-4972-82f9-b7d13e523113"),
                             Address = "spam.dnsbl.sorbs.net",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "Spam Sorbs",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("858b09da-10bf-4500-a492-d7a7466b68d5"),
+                            Id = new Guid("9ca9a5a6-e4cb-4ada-b9bd-81ba9b163027"),
                             Address = "smtp.dnsbl.sorbs.net",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "SMTP Relay Sorbs",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("894eada3-58c2-45fd-9547-c8a26f6ac602"),
+                            Id = new Guid("35ae8fb7-e6a6-4793-a81a-ec894d05f3e6"),
                             Address = "web.dnsbl.sorbs.net",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.sorbs.net/lookup.shtml",
                             Level = 3,
                             Name = "Web Sorbs",
                             Type = 1,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("ccd62597-015d-41f6-84d5-fc60bd47dd49"),
+                            Id = new Guid("1815dd31-d5c5-4738-a6b5-0b133fef008a"),
                             Address = "spam.dnsbl.anonmails.de",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://anonmails.de/dnsbl.php?ip=ADDRESS",
                             Level = 1,
                             Name = "Annonmails.de",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("6e12df9a-4f9b-4161-85c5-7d76bc53f929"),
+                            Id = new Guid("bd9ee37a-02d5-4e67-a4bc-6a70dcbac356"),
                             Address = "ubl.lashback.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://blacklist.lashback.com/?ipAddress=ADDRESS",
                             Level = 3,
                             Name = "Lashback",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("4c851d31-79ed-4718-ad71-574db9b24dec"),
+                            Id = new Guid("b48850b5-c05c-4bc6-b97d-cc0f1ae91488"),
                             Address = "z.mailspike.net",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://mailspike.org/iplookup.html",
                             Level = 1,
                             Name = "Mailspike",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("5dc4fccf-4ac5-4765-9498-b42cc8562da5"),
+                            Id = new Guid("2aea4ee4-f75e-4361-8e3e-f99e2b91aef7"),
                             Address = "cbl.abuseat.org",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "http://www.abuseat.org",
                             Level = 1,
                             Name = "Abuseeat",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("56619a78-7ca1-4a20-aae9-50b5fc609fed"),
+                            Id = new Guid("d6327ed8-5ca5-4998-8e98-b4ce0e99a85f"),
                             Address = "psbl.surriel.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://psbl.org/listing?ip=ADDRESS",
                             Level = 1,
                             Name = "PSBL Surriel",
                             Type = 0,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
                         },
                         new
                         {
-                            Id = new Guid("1189efdb-655f-4c22-9f86-f511ebbd0b7c"),
+                            Id = new Guid("c43ce0ec-d77d-4330-8172-a1ba18a52c02"),
                             Address = "bl.rspamd.com",
-                            CreateTime = 1683057889L,
+                            CreateTime = 1683372065L,
                             DelistUrl = "https://bl.rspamd.com/",
                             Level = 1,
                             Name = "RBL Rspamd",
                             Type = 1,
-                            UpdateTime = 1683057889L
+                            UpdateTime = 1683372065L
+                        },
+                        new
+                        {
+                            Id = new Guid("e6095edc-d03c-4671-88c7-e9486a586642"),
+                            Address = "dnsbl-1.uceprotect.net",
+                            CreateTime = 1683372065L,
+                            DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS",
+                            Level = 2,
+                            Name = "UCEPROTECTL1",
+                            Type = 0,
+                            UpdateTime = 1683372065L
+                        },
+                        new
+                        {
+                            Id = new Guid("ffbff040-d126-45ac-bbb5-2a5161f82f93"),
+                            Address = "dnsbl-2.uceprotect.net",
+                            CreateTime = 1683372065L,
+                            DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS",
+                            Level = 2,
+                            Name = "UCEPROTECTL2",
+                            Type = 0,
+                            UpdateTime = 1683372065L
+                        },
+                        new
+                        {
+                            Id = new Guid("687c2277-f520-485e-9525-17add86c3264"),
+                            Address = "dnsbl-3.uceprotect.net",
+                            CreateTime = 1683372065L,
+                            DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS",
+                            Level = 2,
+                            Name = "UCEPROTECTL3",
+                            Type = 0,
+                            UpdateTime = 1683372065L
                         });
                 });
 
@@ -346,6 +417,21 @@ namespace rbl_tracker.Migrations.Sqlite
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CheckRblHistoryRbl", b =>
+                {
+                    b.HasOne("rbl_tracker.Models.CheckRblHistory", null)
+                        .WithMany()
+                        .HasForeignKey("DetectedHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("rbl_tracker.Models.Rbl", null)
+                        .WithMany()
+                        .HasForeignKey("RblsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
