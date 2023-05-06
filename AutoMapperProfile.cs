@@ -3,6 +3,7 @@ using rbl_tracker.Dtos.Rbl;
 using rbl_tracker.Dtos.Ip;
 using rbl_tracker.Dtos.Domain;
 using rbl_tracker.Dtos.Auth;
+using rbl_tracker.Dtos.Check;
 
 namespace rbl_tracker
 {
@@ -11,6 +12,7 @@ namespace rbl_tracker
         public AutoMapperProfile()
         {
             CreateMap<Rbl, GetRblDto>();
+            CreateMap<Rbl, GetRblListingDto>();
             CreateMap<NewRblDto, Rbl>();
 
             CreateMap<Domain, GetDomainDto>();
@@ -20,6 +22,10 @@ namespace rbl_tracker
             CreateMap<NewIpDto, Ip>();
 
             CreateMap<User, GetUserDto>();
+
+            CreateMap<CheckRblHistory, GetRblCheckHistoryDto>();
+            CreateMap<CheckRblHistory, GetRblCheckSimpleHistoryDto>();
+            CreateMap<SetRblCheckHistoryDto, CheckRblHistory>();
         }
     }
 }

@@ -3,7 +3,7 @@ namespace rbl_tracker.Services.IpServices
 {
     public interface IIpService
     {
-        Task<ServiceResponse<List<GetIpDto>>> GetAllIps(Guid ownerId);
+        Task<ServiceResponse<List<GetIpDto>>> GetAllIps();
         Task<ServiceResponse<GetIpDto>> GetIpById(Guid id);
         Task<ServiceResponse<GetIpDto>> GetIpByName(string name);
         Task<ServiceResponse<List<GetIpDto>>> AddIp(NewIpDto newIp);

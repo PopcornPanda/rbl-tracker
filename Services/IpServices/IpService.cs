@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using AutoMapper;
 using rbl_tracker.Dtos.Ip;
+using System.Net;
 
 namespace rbl_tracker.Services.IpServices
 {
@@ -19,11 +20,16 @@ namespace rbl_tracker.Services.IpServices
 
         private Guid GetUserId() => Guid.Parse(_httpContextAccessor.HttpContext!.User
             .FindFirstValue(ClaimTypes.NameIdentifier)!);
+
         public async Task<ServiceResponse<List<GetIpDto>>> AddIp(NewIpDto newIp)
         {
+            IPAddress ValidateIp;
             var serviceResponse = new ServiceResponse<List<GetIpDto>>();
             var ip = _mapper.Map<Ip>(newIp);
             ip.Owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
+
+            if (IPAddress.TryParse(ip.Address, out ValidateIp!) is false)
+                throw new Exception($"Provided Ip is not valid");
 
             _context.Ips.Add(_mapper.Map<Ip>(ip));
             await _context.SaveChangesAsync();
@@ -65,7 +71,7 @@ namespace rbl_tracker.Services.IpServices
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetIpDto>>> GetAllIps(Guid ownerId)
+        public async Task<ServiceResponse<List<GetIpDto>>> GetAllIps()
         {
             var serviceResponse = new ServiceResponse<List<GetIpDto>>();
             var ips = await _context.Ips.Include(i => i.Owner)
@@ -101,10 +107,14 @@ namespace rbl_tracker.Services.IpServices
 
             try
             {
+                IPAddress ValidateIp;
                 var ip = await _context.Ips.Include(i => i.Owner)
                     .FirstOrDefaultAsync(i => i.Id == updatedIp.Id && i.Owner!.Id == GetUserId());
                 if (ip is null || ip.Owner!.Id != GetUserId())
                     throw new Exception($"Ip with Id '{updatedIp.Id}' not found");
+
+                if (IPAddress.TryParse(ip.Address, out ValidateIp!) is false)
+                    throw new Exception($"Provided Ip is not valid");
 
                 ip.Name = updatedIp.Name;
                 ip.Address = updatedIp.Address;

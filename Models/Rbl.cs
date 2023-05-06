@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace rbl_tracker.Models
 {
     public class Rbl
@@ -10,5 +12,6 @@ namespace rbl_tracker.Models
         public string DelistUrl { get; set; } = string.Empty;
         public long CreateTime {get; set;} = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         public long UpdateTime {get; set;} = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+        public List<CheckRblHistory>? DetectedHistory { get; set; }
     }
 }

@@ -21,8 +21,7 @@ namespace rbl_tracker.Controllers
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetDomainDto>>>> Get()
         {
-            Guid id = Guid.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value);
-            return Ok(await _domainService.GetAllDomains(id));
+            return Ok(await _domainService.GetAllDomains());
         }
 
         [HttpGet("{id}")]
