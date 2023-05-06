@@ -74,7 +74,7 @@ builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IRblService, RblService>();
 builder.Services.AddScoped<IIpService, IpService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
-builder.Services.AddScoped<IAuth, Auth>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICheckRblService, CheckRblService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => 
