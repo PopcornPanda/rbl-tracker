@@ -8,7 +8,7 @@ namespace rbl_tracker.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/domain")]
     public class DomainController : ControllerBase
     {
         private readonly IDomainService _domainService;

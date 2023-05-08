@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace rbl_tracker.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/rbl")]
     public class RblController : ControllerBase
     {
         private readonly IRblService _rblService;

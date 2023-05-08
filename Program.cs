@@ -3,8 +3,10 @@ global using rbl_tracker.Models;
 global using Microsoft.EntityFrameworkCore;
 using rbl_tracker.Services.RblServices;
 using rbl_tracker.Services.IpServices;
+using rbl_tracker.Services.Info;
 using rbl_tracker.Services.DomainServices;
 using rbl_tracker.Services.CheckRblServices;
+using rbl_tracker.Services.Auth;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -75,6 +77,7 @@ builder.Services.AddScoped<IRblService, RblService>();
 builder.Services.AddScoped<IIpService, IpService>();
 builder.Services.AddScoped<IDomainService, DomainService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IInfoService, InfoService>();
 builder.Services.AddScoped<ICheckRblService, CheckRblService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => 

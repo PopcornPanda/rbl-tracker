@@ -16,9 +16,11 @@ namespace rbl_tracker
             CreateMap<NewRblDto, Rbl>();
 
             CreateMap<Domain, GetDomainDto>();
+            CreateMap<Domain, GetSimpleDomainDto>();
             CreateMap<NewDomainDto, Domain>();
 
             CreateMap<Ip, GetIpDto>();
+            CreateMap<Ip, GetSimpleIpDto>();
             CreateMap<NewIpDto, Ip>();
 
             CreateMap<User, GetUserDto>();

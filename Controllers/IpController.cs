@@ -8,7 +8,7 @@ namespace rbl_tracker.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/ip")]
     public class IpController : ControllerBase
     {
         private readonly IIpService _ipService;

@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using rbl_tracker.Dtos.Auth;
+using rbl_tracker.Services.Auth;
 
 namespace rbl_tracker.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authRepo;
@@ -40,5 +41,6 @@ namespace rbl_tracker.Controllers
 
             return Ok(response);
         } 
+
     }
 }
