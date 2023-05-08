@@ -9,7 +9,7 @@ namespace rbl_tracker.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/checkrbl")]
     public class CheckRblController : ControllerBase
     {
         private readonly ICheckRblService _checkRblService;

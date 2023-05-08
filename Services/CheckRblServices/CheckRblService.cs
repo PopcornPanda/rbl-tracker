@@ -57,12 +57,10 @@ namespace rbl_tracker.Services.CheckRblServices
                     {
                         var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
                         var revip = String.Join(".", ip.Address.Split(".").Reverse());
-                        foreach (var rbl in rbls)
+                        Parallel.ForEach (rbls, async rbl =>
                         {
-                            Console.WriteLine(revip + "." + rbl.Address);
                             var query = await lookup.QueryAsync(revip + "." + rbl.Address,QueryType.A);
                             var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
-                            Console.WriteLine(_rblresult);
                             if (_rblresult is not null && rbl is not null)
                             {
                                 checkResult.Rbls.Add(rbl);
@@ -70,7 +68,7 @@ namespace rbl_tracker.Services.CheckRblServices
                                 if (checkResult.Level is null || checkResult.Level < rbl.Level)
                                     checkResult.Level = rbl.Level;
                             }
-                        };
+                        });
                         checkResult.Ip = ip.Id;
                         checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                         _context.CheckRblHistory.Add(checkResult);
@@ -81,7 +79,7 @@ namespace rbl_tracker.Services.CheckRblServices
                     foreach (var domain in domains)
                     {
                         var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
-                        foreach (var rbl in surbls)
+                        Parallel.ForEach (surbls, async rbl =>
                         {
                             var query = await lookup.QueryAsync(domain.Address + "." + rbl.Address,QueryType.A);
                             var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
@@ -92,7 +90,7 @@ namespace rbl_tracker.Services.CheckRblServices
                                 if (checkResult.Level is null || checkResult.Level < rbl.Level)
                                     checkResult.Level = rbl.Level;
                             }
-                        }
+                        });
                         checkResult.Domain = domain.Id;
                         checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                         await _context.SaveChangesAsync();

@@ -1,4 +1,6 @@
-namespace rbl_tracker.Data
+using rbl_tracker.Dtos.Auth;
+
+namespace rbl_tracker.Services.Auth
 {
     public interface IAuthService
     {
