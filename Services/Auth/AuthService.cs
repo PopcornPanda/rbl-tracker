@@ -62,7 +62,7 @@ namespace rbl_tracker.Services.Auth
                 return response;
             }
 
-            if (Validators.ValidateEmail(user.Email))
+            if (! Validators.ValidateEmail(user.Email))
             {
                 response.Success = false;
                 response.Message = "Email address is incorrect!";

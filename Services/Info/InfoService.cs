@@ -25,8 +25,7 @@ namespace rbl_tracker.Services.Info
 
                 var user = await _context.Users
                     .Where(u => u.Id == GetUserId())
-                    .Include(u => u.Ips)
-                    .Include(u => u.Domains)
+                    .Include(u => u.Hosts)
                     .FirstOrDefaultAsync();
                 response.Data = _mapper.Map<GetUserDto>(user);
 

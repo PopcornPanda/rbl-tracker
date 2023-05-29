@@ -3,6 +3,7 @@ using AutoMapper;
 using rbl_tracker.Dtos.Check;
 using System.Net;
 using DnsClient;
+using System.Text.RegularExpressions;
 
 namespace rbl_tracker.Services.CheckRblServices
 {
@@ -21,7 +22,7 @@ namespace rbl_tracker.Services.CheckRblServices
             _mapper = mapper;
         }
 
-        public async Task<ServiceResponse<List<GetRblCheckHistoryDto>>> RblCheck()
+        public async Task<ServiceResponse<List<GetRblCheckHistoryDto>>> RblCheck(Guid userId)
         {
             var namesevers = new List<IPAddress>();
             var _resolversInConfig = _configuration.GetSection("AppSettings:Resolvers").Get<List<string>>();
@@ -43,56 +44,55 @@ namespace rbl_tracker.Services.CheckRblServices
             var serviceResponse = new ServiceResponse<List<GetRblCheckHistoryDto>>();
             serviceResponse.Data = new List<GetRblCheckHistoryDto>();
 
-            var ips = await _context.Ips.Include(i => i.Owner)
-                .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
-            var domains = await _context.Domains.Include(d => d.Owner)
+            var hosts = await _context.Hosts.Include(i => i.Owner)
                 .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
             var rbls = await _context.Rbls.Where(r => r.Type == RblType.Rbl).ToListAsync();
             var surbls = await _context.Rbls.Where(r => r.Type == RblType.Surbl).ToListAsync();
 
             try
             {
-                if (ips.Count != 0)
-                    foreach (var ip in ips)
+                if (hosts.Count != 0)
+                    foreach (var host in hosts)
                     {
                         var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
-                        var revip = String.Join(".", ip.Address.Split(".").Reverse());
-                        Parallel.ForEach (rbls, async rbl =>
+                        var revhost = String.Join(".", host.Address.Split(".").Reverse());
+                        if (host.isDomain)
                         {
-                            var query = await lookup.QueryAsync(revip + "." + rbl.Address,QueryType.A);
-                            var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
-                            if (_rblresult is not null && rbl is not null)
+                            await Parallel.ForEachAsync (surbls, async (rbl, CancellationToken) =>
                             {
-                                checkResult.Rbls.Add(rbl);
+                                var query = await lookup.QueryAsync(host.Address + "." + rbl.Address,QueryType.A);
+                                var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
+                                if (_rblresult is not null && rbl is not null)
+                                {
+                                    if (isListed(_rblresult.ToString()))
+                                    {
+                                        checkResult.Rbls.Add(rbl);
 
-                                if (checkResult.Level is null || checkResult.Level < rbl.Level)
-                                    checkResult.Level = rbl.Level;
-                            }
-                        });
-                        checkResult.Ip = ip.Id;
+                                        if (checkResult.Level is null || checkResult.Level < rbl.Level)
+                                            checkResult.Level = rbl.Level;
+                                    }
+                                }
+                            });
+                        } else {
+                            await Parallel.ForEachAsync (rbls, async (rbl, CancellationToken) =>
+                            {
+                                var query = await lookup.QueryAsync(revhost + "." + rbl.Address,QueryType.A);
+                                var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
+                                if (_rblresult is not null && rbl is not null)
+                                {
+                                    if (isListed(_rblresult.ToString()))
+                                    {
+                                        checkResult.Rbls.Add(rbl);
+
+                                        if (checkResult.Level is null || checkResult.Level < rbl.Level)
+                                            checkResult.Level = rbl.Level;
+                                    }
+                                }
+                            });
+                        }
+                        checkResult.Host = host.Id;
                         checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                         _context.CheckRblHistory.Add(checkResult);
-                        await _context.SaveChangesAsync();
-                    };
-
-                if (domains.Count != 0)
-                    foreach (var domain in domains)
-                    {
-                        var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
-                        Parallel.ForEach (surbls, async rbl =>
-                        {
-                            var query = await lookup.QueryAsync(domain.Address + "." + rbl.Address,QueryType.A);
-                            var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
-                            if (_rblresult is not null && rbl is not null)
-                            {
-                                checkResult.Rbls.Add(rbl);
-
-                                if (checkResult.Level is null || checkResult.Level < rbl.Level)
-                                    checkResult.Level = rbl.Level;
-                            }
-                        });
-                        checkResult.Domain = domain.Id;
-                        checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                         await _context.SaveChangesAsync();
                     };
             }
@@ -109,45 +109,37 @@ namespace rbl_tracker.Services.CheckRblServices
         {
             var serviceResponse = new ServiceResponse<List<GetRblCheckSimpleHistoryDto>>();
             serviceResponse.Data = new List<GetRblCheckSimpleHistoryDto>();
-            var ips = await _context.Ips.Include(i => i.Owner)
-                .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
-            var domains = await _context.Domains.Include(d => d.Owner)
+            var hosts = await _context.Hosts.Include(i => i.Owner)
                 .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
 
-            if (ips.Count != 0)
-                foreach (var ip in ips)
+            if (hosts.Count != 0)
+                foreach (var host in hosts)
                 {
                     var _entry = await _context.CheckRblHistory
                         .Include(h => h.Rbls)
                         .OrderByDescending(h => h.CheckTime)
-                        .Where(h => h.Ip == ip.Id)
+                        .Where(h => h.Host == host.Id)
                         .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
                         .FirstAsync();
-                    _entry.Ip = ip.Address;
+                    _entry.Host = host.Address;
                     foreach (var rblinfo in _entry.Rbls)
-                        rblinfo.DelistUrl = rblinfo.DelistUrl.Replace("ADDRESS", _entry.Ip);
-                    serviceResponse.Data!.Add(_entry);
-                }
-            if (domains.Count != 0)
-                foreach (var domain in domains)
-                {
-                    var _entry = await _context.CheckRblHistory
-                        .Include(h => h.Rbls)
-                        .OrderByDescending(h => h.CheckTime)
-                        .Where(h => h.Domain == domain.Id)
-                        .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
-                        .FirstAsync();
-                    _entry.Domain = domain.Address;
-                    foreach (var rblinfo in _entry.Rbls)
-                       rblinfo.DelistUrl = rblinfo.DelistUrl.Replace("ADDRESS", _entry.Domain);
+                        rblinfo.DelistUrl = rblinfo.DelistUrl.Replace("ADDRESS", _entry.Host);
                     serviceResponse.Data!.Add(_entry);
                 }
 
             return serviceResponse;
         }
+        
+        
 
         private Guid GetUserId() => Guid.Parse(_httpContextAccessor.HttpContext!.User
             .FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        private bool isListed(string ip){
+            string _pattern = @"^(127)\.[0-9](\.[0-9]{1,3}){2}";
+            Regex _check = new Regex(_pattern);
+            return _check.IsMatch(ip, 0);  
+        }
 
     }
 }
