@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-
-
 
 namespace rbl_tracker.Data
 {
@@ -44,11 +38,10 @@ namespace rbl_tracker.Data
 
         }
 
-        public DbSet<Rbl> Rbls => Set<Rbl>();
-        public DbSet<Ip> Ips => Set<Ip>();
-        public DbSet<Domain> Domains => Set<Domain>();
-        public DbSet<User> Users => Set<User>();
-        public DbSet<CheckRblHistory> CheckRblHistory => Set<CheckRblHistory>();
+        public DbSet<Models.Rbl> Rbls => Set<Models.Rbl>();
+        public DbSet<Models.Host> Hosts => Set<Models.Host>();
+        public DbSet<Models.User> Users => Set<Models.User>();
+        public DbSet<Models.CheckRblHistory> CheckRblHistory => Set<Models.CheckRblHistory>();
 
         protected void ApplyConfiguration(ModelBuilder modelBuilder, string[] namespaces)
         {

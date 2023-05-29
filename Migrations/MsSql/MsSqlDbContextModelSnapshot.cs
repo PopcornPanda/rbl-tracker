@@ -46,10 +46,7 @@ namespace rbl_tracker.Migrations.MsSql
                     b.Property<long>("CheckTime")
                         .HasColumnType("bigint");
 
-                    b.Property<Guid?>("Domain")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("Ip")
+                    b.Property<Guid?>("Host")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Level")
@@ -60,7 +57,7 @@ namespace rbl_tracker.Migrations.MsSql
                     b.ToTable("CheckRblHistory");
                 });
 
-            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+            modelBuilder.Entity("rbl_tracker.Models.Host", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,41 +80,14 @@ namespace rbl_tracker.Migrations.MsSql
                     b.Property<long>("UpdateTime")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Domains");
-                });
-
-            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<long>("UpdateTime")
-                        .HasColumnType("bigint");
+                    b.Property<bool>("isDomain")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Ips");
+                    b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("rbl_tracker.Models.Rbl", b =>
@@ -439,19 +409,10 @@ namespace rbl_tracker.Migrations.MsSql
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+            modelBuilder.Entity("rbl_tracker.Models.Host", b =>
                 {
                     b.HasOne("rbl_tracker.Models.User", "Owner")
-                        .WithMany("Domains")
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
-                {
-                    b.HasOne("rbl_tracker.Models.User", "Owner")
-                        .WithMany("Ips")
+                        .WithMany("Hosts")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
@@ -459,9 +420,7 @@ namespace rbl_tracker.Migrations.MsSql
 
             modelBuilder.Entity("rbl_tracker.Models.User", b =>
                 {
-                    b.Navigation("Domains");
-
-                    b.Navigation("Ips");
+                    b.Navigation("Hosts");
                 });
 #pragma warning restore 612, 618
         }

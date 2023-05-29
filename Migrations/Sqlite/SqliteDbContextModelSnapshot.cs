@@ -41,10 +41,7 @@ namespace rbl_tracker.Migrations.Sqlite
                     b.Property<long>("CheckTime")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid?>("Domain")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("Ip")
+                    b.Property<Guid?>("Host")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("Level")
@@ -55,7 +52,7 @@ namespace rbl_tracker.Migrations.Sqlite
                     b.ToTable("CheckRblHistory");
                 });
 
-            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+            modelBuilder.Entity("rbl_tracker.Models.Host", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,41 +75,14 @@ namespace rbl_tracker.Migrations.Sqlite
                     b.Property<long>("UpdateTime")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Domains");
-                });
-
-            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("CreateTime")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("OwnerId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long>("UpdateTime")
+                    b.Property<bool>("isDomain")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Ips");
+                    b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("rbl_tracker.Models.Rbl", b =>
@@ -434,19 +404,10 @@ namespace rbl_tracker.Migrations.Sqlite
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("rbl_tracker.Models.Domain", b =>
+            modelBuilder.Entity("rbl_tracker.Models.Host", b =>
                 {
                     b.HasOne("rbl_tracker.Models.User", "Owner")
-                        .WithMany("Domains")
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("rbl_tracker.Models.Ip", b =>
-                {
-                    b.HasOne("rbl_tracker.Models.User", "Owner")
-                        .WithMany("Ips")
+                        .WithMany("Hosts")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
@@ -454,9 +415,7 @@ namespace rbl_tracker.Migrations.Sqlite
 
             modelBuilder.Entity("rbl_tracker.Models.User", b =>
                 {
-                    b.Navigation("Domains");
-
-                    b.Navigation("Ips");
+                    b.Navigation("Hosts");
                 });
 #pragma warning restore 612, 618
         }

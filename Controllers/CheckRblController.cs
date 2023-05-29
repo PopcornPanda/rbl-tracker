@@ -13,8 +13,10 @@ namespace rbl_tracker.Controllers
     public class CheckRblController : ControllerBase
     {
         private readonly ICheckRblService _checkRblService;
-        public CheckRblController(ICheckRblService checkRblService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public CheckRblController(ICheckRblService checkRblService, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _checkRblService = checkRblService;
         }
 
@@ -27,8 +29,17 @@ namespace rbl_tracker.Controllers
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetRblCheckHistoryDto>>> CheckRbl()
         {
-            return Ok(await _checkRblService.RblCheck());
+            return Ok(await _checkRblService.RblCheck(Guid.Parse(_httpContextAccessor.HttpContext!.User
+            .FindFirstValue(ClaimTypes.NameIdentifier)!)));
         }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
+         public async Task<ActionResult<ServiceResponse<GetRblCheckHistoryDto>>> CheckUserRbl(Guid id)
+        {
+            return Ok(await _checkRblService.RblCheck(id));
+        }
+
     
     }
 }
