@@ -28,12 +28,15 @@ namespace rbl_tracker.Services.HostServices
             var host = _mapper.Map<Models.Host>(newHost);
             host.Owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
 
-            if (host.isDomain){
+            if (host.isDomain)
+            {
                 if (Uri.CheckHostName(host.Address).Equals(UriHostNameType.Dns) is false)
                     throw new Exception($"Provided Domain is not valid");
-            } else {
-            if (IPAddress.TryParse(host.Address, out ValidateHost!) is false)
-                throw new Exception($"Provided Host is not valid IP address");
+            }
+            else
+            {
+                if (IPAddress.TryParse(host.Address, out ValidateHost!) is false)
+                    throw new Exception($"Provided Host is not valid IP address");
             }
 
             _context.Hosts.Add(_mapper.Map<Models.Host>(host));

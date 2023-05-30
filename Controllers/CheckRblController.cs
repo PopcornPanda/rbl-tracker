@@ -35,11 +35,11 @@ namespace rbl_tracker.Controllers
 
         [ApiExplorerSettings(IgnoreApi = true)]
         [NonAction]
-         public async Task<ActionResult<ServiceResponse<GetRblCheckHistoryDto>>> CheckUserRbl(Guid id)
+        public async Task<ActionResult<ServiceResponse<GetRblCheckHistoryDto>>> CheckUserRbl(Guid id)
         {
             return Ok(await _checkRblService.RblCheck(id));
         }
 
-    
+
     }
 }

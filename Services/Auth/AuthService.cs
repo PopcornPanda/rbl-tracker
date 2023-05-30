@@ -42,11 +42,11 @@ namespace rbl_tracker.Services.Auth
         public async Task<ServiceResponse<GetUserDto>> Me()
         {
             var response = new ServiceResponse<GetUserDto>();
-            
 
-                var user = await _context.Users
-                    .Where(u => u.Id == GetUserId()).FirstOrDefaultAsync();
-                response.Data = _mapper.Map<GetUserDto>(user);
+
+            var user = await _context.Users
+                .Where(u => u.Id == GetUserId()).FirstOrDefaultAsync();
+            response.Data = _mapper.Map<GetUserDto>(user);
 
 
             return response;
@@ -62,7 +62,7 @@ namespace rbl_tracker.Services.Auth
                 return response;
             }
 
-            if (! Validators.ValidateEmail(user.Email))
+            if (!Validators.ValidateEmail(user.Email))
             {
                 response.Success = false;
                 response.Message = "Email address is incorrect!";
@@ -103,7 +103,7 @@ namespace rbl_tracker.Services.Auth
 
         public async Task<bool> FirstUser()
         {
-            if (! await _context.Users.AnyAsync())
+            if (!await _context.Users.AnyAsync())
             {
                 return true;
             }

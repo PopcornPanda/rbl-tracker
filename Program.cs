@@ -32,7 +32,7 @@ switch (builder.Configuration["AppSettings:DatabaseProvider"])
         builder.Services.AddDbContext<DataContext, MySqlDbContext>();
         builder.Services.AddHealthChecks().AddDbContextCheck<MySqlDbContext>();
         break;
-    
+
     case DbProviderType.Sqlite:
     default:
         builder.Services.AddDbContext<DataContext, SqliteDbContext>();
@@ -63,7 +63,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme {
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
         Description = """Standard Auth header: "bearer {token}" """,
         In = ParameterLocation.Header,
         Name = "Authorization",
@@ -78,16 +79,16 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInfoService, InfoService>();
 builder.Services.AddScoped<ICheckRblService, CheckRblService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => 
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8
                     .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!)),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
     });
 
 builder.Services.AddHttpContextAccessor();

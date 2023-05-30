@@ -17,17 +17,17 @@ namespace rbl_tracker.Services.Info
 
         }
 
-    
+
         public async Task<ServiceResponse<GetUserDto>> Me()
         {
             var response = new ServiceResponse<GetUserDto>();
-            
 
-                var user = await _context.Users
-                    .Where(u => u.Id == GetUserId())
-                    .Include(u => u.Hosts)
-                    .FirstOrDefaultAsync();
-                response.Data = _mapper.Map<GetUserDto>(user);
+
+            var user = await _context.Users
+                .Where(u => u.Id == GetUserId())
+                .Include(u => u.Hosts)
+                .FirstOrDefaultAsync();
+            response.Data = _mapper.Map<GetUserDto>(user);
 
 
             return response;

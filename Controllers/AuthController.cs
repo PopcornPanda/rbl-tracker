@@ -12,35 +12,35 @@ namespace rbl_tracker.Controllers
         public AuthController(IAuthService authRepo)
         {
             _authRepo = authRepo;
-            
+
         }
         [HttpPost("Register")]
         public async Task<ActionResult<ServiceResponse<Guid>>> Register(UserRegisterDto request)
         {
             var response = await _authRepo.Register(
-                new User {Username = request.Username, Email = request.Email}, request.Password
+                new User { Username = request.Username, Email = request.Email }, request.Password
             );
 
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(response);
             }
 
             return Ok(response);
-        } 
+        }
 
         [HttpPost("Login")]
         public async Task<ActionResult<ServiceResponse<Guid>>> Login(UserLoginDto request)
         {
             var response = await _authRepo.Login(request.Username, request.Password);
 
-            if(!response.Success)
+            if (!response.Success)
             {
                 return BadRequest(response);
             }
 
             return Ok(response);
-        } 
+        }
 
     }
 }

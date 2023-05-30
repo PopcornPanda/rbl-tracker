@@ -19,9 +19,9 @@ namespace rbl_tracker.Controllers
 
         [Route("me")]
         [HttpGet]
-         public async Task<ActionResult<ServiceResponse<GetUserDto>>> Me()
+        public async Task<ActionResult<ServiceResponse<GetUserDto>>> Me()
         {
             return Ok(await _infoService.Me());
-        } 
+        }
     }
 }

@@ -10,8 +10,8 @@ namespace rbl_tracker.Models
         public RblType Type { get; set; } = RblType.Rbl;
         public RblLevel Level { get; set; } = RblLevel.Normal;
         public string DelistUrl { get; set; } = string.Empty;
-        public long CreateTime {get; set;} = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
-        public long UpdateTime {get; set;} = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+        public long CreateTime { get; set; } = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+        public long UpdateTime { get; set; } = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         public List<CheckRblHistory>? DetectedHistory { get; set; }
     }
 }

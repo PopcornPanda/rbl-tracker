@@ -4,7 +4,7 @@ namespace rbl_tracker.Services.Auth
 {
     internal class Validators
     {
-         internal enum PasswordScore
+        internal enum PasswordScore
         {
             Blank = 0,
             TooShort = 1,
@@ -108,7 +108,7 @@ namespace rbl_tracker.Services.Auth
         internal static bool ValidateEmail(string email)
         {
             var _email = email.Trim();
-            
+
             if (_email.EndsWith(".")) return false;
 
             var _validated = new System.Net.Mail.MailAddress(_email);

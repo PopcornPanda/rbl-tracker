@@ -15,7 +15,7 @@ namespace rbl_tracker.Controllers
         {
             _rblService = rblService;
         }
-        
+
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Get()
         {
