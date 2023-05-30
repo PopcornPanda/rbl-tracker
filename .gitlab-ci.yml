@@ -114,9 +114,9 @@ make multi-arch:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker manifest create ${CONTAINER_DEV_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-amd64 --amend ${CONTAINER_DEV_IMAGE}-arm64
+    - docker manifest create ${CONTAINER_CANARY_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-amd64 --amend ${CONTAINER_DEV_IMAGE}-arm64
     - docker manifest push ${CONTAINER_DEV_IMAGE}
-    - docker tag ${CONTAINER_DEV_IMAGE} ${CONTAINER_CANARY_IMAGE}
-    - docker push ${CONTAINER_CANARY_IMAGE}
+    - docker manifest push ${CONTAINER_CANARY_IMAGE}
   tags:
     - docker
     - x86
