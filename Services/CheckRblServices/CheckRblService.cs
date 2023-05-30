@@ -34,9 +34,9 @@ namespace rbl_tracker.Services.CheckRblServices
 
             var lookupOptions = new LookupClientOptions(namesevers.ToArray())
             {
-                ContinueOnEmptyResponse = true,
-                UseRandomNameServer = true,
-                ContinueOnDnsError = true
+                ContinueOnEmptyResponse = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnEmptyResponse"),
+                UseRandomNameServer = _configuration.GetValue<bool>("AppSettings:ResolverOptions.UseRandomNameServer"),
+                ContinueOnDnsError = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnDnsError")
 
             };
 
