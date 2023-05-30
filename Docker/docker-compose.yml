@@ -1,5 +1,7 @@
 version: '3'
 
+name: rbl-tracker
+
 networks:
   rbl:
 
@@ -19,7 +21,7 @@ services:
     environment:
       - DOTNET_RUNNING_IN_CONTAINER=true
     healthcheck:
-      test: ["CMD", 'curl', '-f', 'localhost:5000/healtz' ]
+      test: ["CMD", 'curl', '-s', -f', 'localhost:5000/healthz' ]
       retries: 5
       interval: 10s
       start_period: 5s

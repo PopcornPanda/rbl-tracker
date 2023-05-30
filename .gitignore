@@ -480,4 +480,7 @@ $RECYCLE.BIN/
 .vscode
 
 # Ignore sqlite
-Db/*.db*
+Data/*.db*
+
+# Ignore appsetting from compose
+Docker/appsettings.mssql.json
