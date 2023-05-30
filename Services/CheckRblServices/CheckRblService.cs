@@ -90,10 +90,12 @@ namespace rbl_tracker.Services.CheckRblServices
                                 }
                             });
                         }
-                        checkResult.Host = host.Id;
-                        checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
-                        _context.CheckRblHistory.Add(checkResult);
-                        await _context.SaveChangesAsync();
+                        if (checkResult.Rbls.Any()) {
+                            checkResult.Host = host.Id;
+                            checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+                            _context.CheckRblHistory.Add(checkResult);
+                            await _context.SaveChangesAsync();
+                        }
                     };
             }
             catch (Exception ex)
@@ -120,11 +122,13 @@ namespace rbl_tracker.Services.CheckRblServices
                         .OrderByDescending(h => h.CheckTime)
                         .Where(h => h.Host == host.Id)
                         .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
-                        .FirstAsync();
+                        .FirstOrDefaultAsync();
+                    if (_entry is not null) {
                     _entry.Host = host.Address;
                     foreach (var rblinfo in _entry.Rbls)
                         rblinfo.DelistUrl = rblinfo.DelistUrl.Replace("ADDRESS", _entry.Host);
                     serviceResponse.Data!.Add(_entry);
+                    }
                 }
 
             return serviceResponse;
