@@ -1,0 +1,45 @@
+version: '3'
+
+networks:
+  rbl:
+
+services:
+  api:
+    image: registry.gitlab.com/herd-panel/rbl-tracker:canary
+    build:
+      context: ../
+      dockerfile: Docker/Dockerfile
+    ports:
+      - '5000:5000'
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./appsettings.mssql.json:/app/appsettings.json
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    healthcheck:
+      test: ["CMD", 'curl', '-f', 'localhost:5000/healtz' ]
+      retries: 5
+      interval: 10s
+      start_period: 5s
+    networks:
+      - rbl
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD="aRhqxsUREyBzQ7cSit5IABAHXU6Oi0Lf"
+    volumes:
+      - db:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P $${MSSQL_SA_PASSWORD} -Q "SELECT 1"
+      retries: 5
+      interval: 10s
+      start_period: 5s
+    networks:
+      - rbl
+
+volumes:
+  db:
+    driver: local

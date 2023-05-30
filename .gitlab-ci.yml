@@ -33,7 +33,7 @@ stages:
     when: on_success
     expire_in: 1 hour
     paths:
-      - Dockerfile
+      - Docker/
       - publish/
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -55,7 +55,7 @@ stages:
   script:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --dockerfile "${CI_PROJECT_DIR}/Docker/Dockerfile"
       --destination "${CONTAINER_DEV_IMAGE}-${ARCH}"
       --use-new-run
       --cache=true
