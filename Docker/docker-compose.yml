@@ -7,7 +7,7 @@ networks:
 
 services:
   api:
-    image: registry.gitlab.com/herd-panel/rbl-tracker:canary
+    image: registry.gitlab.com/herd-panel/ci-rbl-tracker:canary
     build:
       context: ../
       dockerfile: Docker/Dockerfile

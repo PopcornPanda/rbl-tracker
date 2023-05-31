@@ -11,6 +11,17 @@ Just clone the repo and execute `start.sh` script.
 
 The first created user becomes automatically an administrator (user who can edit rbl lists).
 
+You can also use our docker images:
+
+- Canary build: 
+```
+docker pull registry.gitlab.com/herd-panel/ci-rbl-tracker:canary
+``
+- Latest stable build:
+```
+docker pull registry.gitlab.com/herd-panel/ci-rbl-tracker:latest
+```
+
 ## Bundled Swagger
 As an dotnet API, RBL tracker ships with bundled swagger and swagger UI, which can be easly disabled in `appsettings.json`
 
