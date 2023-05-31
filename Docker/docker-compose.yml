@@ -18,8 +18,6 @@ services:
         condition: service_healthy
     volumes:
       - ./appsettings.mssql.json:/app/appsettings.json
-    environment:
-      - DOTNET_RUNNING_IN_CONTAINER=true
     healthcheck:
       test: ["CMD", 'curl', '-s', '-f', 'localhost:5000/healthz' ]
       retries: 5

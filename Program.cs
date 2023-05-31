@@ -103,9 +103,12 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (builder.Configuration.GetValue<bool>("AppSettings:EnableSwagger"))
 {
     app.UseSwagger();
+}
+if (builder.Configuration.GetValue<bool>("AppSettings:EnableSwaggerUI"))
+{
     app.UseSwaggerUI();
 }
 
