@@ -6,6 +6,9 @@ variables:
   CONTAINER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
   CONTAINER_LATEST_IMAGE: ${CI_REGISTRY_IMAGE}:latest
   CONTAINER_CANARY_IMAGE: ${CI_REGISTRY_IMAGE}:canary
+  CONTAINER_IMAGE_NAME: ${CONTAINER_DEV_IMAGE}
+  CONTAINER_EASY_NAME: ${CONTAINER_CANARY_IMAGE}
+
 
 workflow:
   rules:
@@ -15,6 +18,9 @@ workflow:
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_TAG
+      variables:
+        CONTAINER_IMAGE_NAME: ${CONTAINER_RELEASE_IMAGE}
+        CONTAINER_EASY_NAME: ${CONTAINER_LATEST_IMAGE}
     - if: $CI_COMMIT_REF_PROTECTED
 
 stages:
@@ -56,7 +62,7 @@ stages:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Docker/Dockerfile"
-      --destination "${CONTAINER_DEV_IMAGE}-${ARCH}"
+      --destination "${CONTAINER_IMAGE_NAME}-${ARCH}"
       --use-new-run
       --cache=true
       --cache-ttl=48h
@@ -113,30 +119,10 @@ make multi-arch:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker manifest create ${CONTAINER_DEV_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-amd64 --amend ${CONTAINER_DEV_IMAGE}-arm64
-    - docker manifest create ${CONTAINER_CANARY_IMAGE} --amend ${CONTAINER_DEV_IMAGE}-amd64 --amend ${CONTAINER_DEV_IMAGE}-arm64
-    - docker manifest push ${CONTAINER_DEV_IMAGE}
-    - docker manifest push ${CONTAINER_CANARY_IMAGE}
+    - docker manifest create ${CONTAINER_IMAGE_NAME} --amend ${CONTAINER_IMAGE_NAME}-amd64 --amend ${CONTAINER_IMAGE_NAME}-arm64
+    - docker manifest create ${CONTAINER_EASY_NAME} --amend ${CONTAINER_IMAGE_NAME}-amd64 --amend ${CONTAINER_IMAGE_NAME}-arm64
+    - docker manifest push ${CONTAINER_IMAGE_NAME}
+    - docker manifest push ${CONTAINER_EASY_NAME}
   tags:
     - docker
     - x86
-
-tag release image:
-  image: docker:23.0.4
-  stage: publish image
-  variables:
-    GIT_STRATEGY: none
-  needs:
-    - make multi-arch
-  before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker tag ${CONTAINER_DEV_IMAGE} ${CONTAINER_RELEASE_IMAGE}
-    - docker tag ${CONTAINER_DEV_IMAGE} ${CONTAINER_LATEST_IMAGE}
-    - docker push ${CONTAINER_RELEASE_IMAGE}
-    - docker push ${CONTAINER_LATEST_IMAGE}
-  tags:
-    - docker
-    - x86
-  only:
-    - tags
