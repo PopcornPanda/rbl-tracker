@@ -24,23 +24,7 @@ namespace rbl_tracker.Services.CheckRblServices
 
         public async Task<ServiceResponse<List<GetRblCheckHistoryDto>>> RblCheck(Guid userId)
         {
-            var namesevers = new List<IPAddress>();
-            var _resolversInConfig = _configuration.GetSection("AppSettings:Resolvers").Get<List<string>>();
-            if (_resolversInConfig is not null)
-                foreach (var ns in _resolversInConfig)
-                {
-                    namesevers.Add(IPAddress.Parse(ns.ToString()));
-                }
-
-            var lookupOptions = new LookupClientOptions(namesevers.ToArray())
-            {
-                ContinueOnEmptyResponse = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnEmptyResponse"),
-                UseRandomNameServer = _configuration.GetValue<bool>("AppSettings:ResolverOptions.UseRandomNameServer"),
-                ContinueOnDnsError = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnDnsError")
-
-            };
-
-            var lookup = new LookupClient(lookupOptions);
+            var lookup = RblLookup();
             var serviceResponse = new ServiceResponse<List<GetRblCheckHistoryDto>>();
             serviceResponse.Data = new List<GetRblCheckHistoryDto>();
 
@@ -55,12 +39,12 @@ namespace rbl_tracker.Services.CheckRblServices
                     foreach (var host in hosts)
                     {
                         var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
-                        var revhost = String.Join(".", host.Address.Split(".").Reverse());
-                        if (host.isDomain)
-                        {
-                            await Parallel.ForEachAsync(surbls, async (rbl, CancellationToken) =>
+                        var _queryPart = (host.isDomain) ? host.Address : String.Join(".", host.Address.Split(".").Reverse());
+                        var _rblList = (host.isDomain) ? surbls : rbls;
+
+                        await Parallel.ForEachAsync(_rblList, async (rbl, CancellationToken) =>
                             {
-                                var query = await lookup.QueryAsync(host.Address + "." + rbl.Address, QueryType.A);
+                                var query = await lookup.QueryAsync(_queryPart + "." + rbl.Address, QueryType.A);
                                 var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
                                 if (_rblresult is not null && rbl is not null)
                                 {
@@ -73,25 +57,7 @@ namespace rbl_tracker.Services.CheckRblServices
                                     }
                                 }
                             });
-                        }
-                        else
-                        {
-                            await Parallel.ForEachAsync(rbls, async (rbl, CancellationToken) =>
-                            {
-                                var query = await lookup.QueryAsync(revhost + "." + rbl.Address, QueryType.A);
-                                var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
-                                if (_rblresult is not null && rbl is not null)
-                                {
-                                    if (isListed(_rblresult.ToString()))
-                                    {
-                                        checkResult.Rbls.Add(rbl);
 
-                                        if (checkResult.Level is null || checkResult.Level < rbl.Level)
-                                            checkResult.Level = rbl.Level;
-                                    }
-                                }
-                            });
-                        }
                         if (checkResult.Rbls.Any())
                         {
                             checkResult.Host = host.Id;
@@ -138,7 +104,74 @@ namespace rbl_tracker.Services.CheckRblServices
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<List<GetRblCheckSimpleHistoryDto>>> RblCheckHistorySingle(Models.Host host)
+        {
+            var serviceResponse = new ServiceResponse<List<GetRblCheckSimpleHistoryDto>>();
+            serviceResponse.Data = new List<GetRblCheckSimpleHistoryDto>();
+            var _entry = await _context.CheckRblHistory
+                .Include(h => h.Rbls)
+                .OrderByDescending(h => h.CheckTime)
+                .Where(h => h.Host == host.Id)
+                .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
+                .FirstOrDefaultAsync();
+            if (_entry is not null)
+            {
+                _entry.Host = host.Address;
+                foreach (var rblinfo in _entry.Rbls)
+                    rblinfo.DelistUrl = rblinfo.DelistUrl.Replace("ADDRESS", _entry.Host);
+                serviceResponse.Data!.Add(_entry);
+            }
 
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetRblCheckHistoryDto>>> RblCheckSingle(Guid userId, Models.Host host)
+        {
+            var lookup = RblLookup();
+            var serviceResponse = new ServiceResponse<List<GetRblCheckHistoryDto>>();
+            serviceResponse.Data = new List<GetRblCheckHistoryDto>();
+
+            var rbls = await _context.Rbls.Where(r => r.Type == RblType.Rbl).ToListAsync();
+            var surbls = await _context.Rbls.Where(r => r.Type == RblType.Surbl).ToListAsync();
+
+            try
+            {
+                var checkResult = _mapper.Map<CheckRblHistory>(new SetRblCheckHistoryDto());
+                var _queryPart = (host.isDomain) ? host.Address : String.Join(".", host.Address.Split(".").Reverse());
+                var _rblList = (host.isDomain) ? surbls : rbls;
+
+                await Parallel.ForEachAsync(_rblList, async (rbl, CancellationToken) =>
+                    {
+                        var query = await lookup.QueryAsync(_queryPart + "." + rbl.Address, QueryType.A);
+                        var _rblresult = query.Answers.ARecords().FirstOrDefault()?.Address;
+                        if (_rblresult is not null && rbl is not null)
+                        {
+                            if (isListed(_rblresult.ToString()))
+                            {
+                                checkResult.Rbls.Add(rbl);
+
+                                if (checkResult.Level is null || checkResult.Level < rbl.Level)
+                                    checkResult.Level = rbl.Level;
+                            }
+                        }
+                    });
+                    
+                if (checkResult.Rbls.Any())
+                {
+                    checkResult.Host = host.Id;
+                    checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+                    _context.CheckRblHistory.Add(checkResult);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
 
         private Guid GetUserId() => Guid.Parse(_httpContextAccessor.HttpContext!.User
             .FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -148,6 +181,27 @@ namespace rbl_tracker.Services.CheckRblServices
             string _pattern = @"^(127)\.[0-9](\.[0-9]{1,3}){2}";
             Regex _check = new Regex(_pattern);
             return _check.IsMatch(ip, 0);
+        }
+
+        private LookupClient RblLookup()
+        {
+            var namesevers = new List<IPAddress>();
+            var _resolversInConfig = _configuration.GetSection("AppSettings:Resolvers").Get<List<string>>();
+            if (_resolversInConfig is not null)
+                foreach (var ns in _resolversInConfig)
+                {
+                    namesevers.Add(IPAddress.Parse(ns.ToString()));
+                }
+
+            var lookupOptions = new LookupClientOptions(namesevers.ToArray())
+            {
+                ContinueOnEmptyResponse = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnEmptyResponse"),
+                UseRandomNameServer = _configuration.GetValue<bool>("AppSettings:ResolverOptions.UseRandomNameServer"),
+                ContinueOnDnsError = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnDnsError")
+
+            };
+
+            return new LookupClient(lookupOptions);
         }
 
     }
