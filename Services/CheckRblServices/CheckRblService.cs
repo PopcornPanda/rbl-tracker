@@ -4,6 +4,8 @@ using rbl_tracker.Dtos.Check;
 using System.Net;
 using DnsClient;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
+using rbl_tracker.Configuration;
 
 namespace rbl_tracker.Services.CheckRblServices
 {
@@ -12,12 +14,12 @@ namespace rbl_tracker.Services.CheckRblServices
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IConfiguration _configuration;
+        private readonly ResolverSettings _settings;
 
-        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IOptions<ResolverSettings> settings)
         {
-            _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
+            _settings = settings.Value;
             _context = context;
             _mapper = mapper;
         }
@@ -186,7 +188,7 @@ namespace rbl_tracker.Services.CheckRblServices
         private LookupClient RblLookup()
         {
             var namesevers = new List<IPAddress>();
-            var _resolversInConfig = _configuration.GetSection("AppSettings:Resolvers").Get<List<string>>();
+            var _resolversInConfig = _settings.Resolvers;
             if (_resolversInConfig is not null)
                 foreach (var ns in _resolversInConfig)
                 {
@@ -195,9 +197,9 @@ namespace rbl_tracker.Services.CheckRblServices
 
             var lookupOptions = new LookupClientOptions(namesevers.ToArray())
             {
-                ContinueOnEmptyResponse = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnEmptyResponse"),
-                UseRandomNameServer = _configuration.GetValue<bool>("AppSettings:ResolverOptions.UseRandomNameServer"),
-                ContinueOnDnsError = _configuration.GetValue<bool>("AppSettings:ResolverOptions.ContinueOnDnsError")
+                ContinueOnEmptyResponse = _settings.ContinueOnEmptyResponse,
+                UseRandomNameServer = _settings.UseRandomNameServer,
+                ContinueOnDnsError = _settings.ContinueOnDnsError
 
             };
 

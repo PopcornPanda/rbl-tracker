@@ -11,6 +11,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
+using rbl_tracker.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +94,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+builder.Services.Configure<ResolverSettings>(builder.Configuration.GetSection(nameof(ResolverSettings)));
 
 // generate lowercase URLs
 builder.Services.Configure<RouteOptions>(options =>
