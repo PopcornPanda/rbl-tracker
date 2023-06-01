@@ -62,6 +62,13 @@ namespace rbl_tracker.Services.Auth
                 return response;
             }
 
+            if (await EmailUsed(user.Email))
+            {
+                response.Success = false;
+                response.Message = "Email is already used!";
+                return response;
+            }
+
             if (!Validators.ValidateEmail(user.Email))
             {
                 response.Success = false;
@@ -95,6 +102,15 @@ namespace rbl_tracker.Services.Auth
         public async Task<bool> UserExists(string username)
         {
             if (await _context.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> EmailUsed(string email)
+        {
+            if (await _context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower()))
             {
                 return true;
             }

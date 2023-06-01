@@ -62,7 +62,7 @@ namespace rbl_tracker.Migrations.MySql
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<long>("CreateTime")
                         .HasColumnType("bigint");
@@ -81,6 +81,9 @@ namespace rbl_tracker.Migrations.MySql
                         .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Address")
+                        .IsUnique();
 
                     b.HasIndex("OwnerId");
 
@@ -366,7 +369,7 @@ namespace rbl_tracker.Migrations.MySql
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<byte[]>("PaswordHash")
                         .IsRequired()
@@ -384,9 +387,15 @@ namespace rbl_tracker.Migrations.MySql
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

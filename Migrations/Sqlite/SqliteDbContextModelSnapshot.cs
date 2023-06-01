@@ -80,6 +80,9 @@ namespace rbl_tracker.Migrations.Sqlite
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Address")
+                        .IsUnique();
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hosts");
@@ -385,6 +388,12 @@ namespace rbl_tracker.Migrations.Sqlite
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

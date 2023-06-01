@@ -39,6 +39,13 @@ namespace rbl_tracker.Services.HostServices
                     throw new Exception($"Provided Host is not valid IP address");
             }
 
+            if (await HostExists(host.Address))
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = "Host already exists!";
+                return serviceResponse;
+            }
+
             _context.Hosts.Add(_mapper.Map<Models.Host>(host));
             await _context.SaveChangesAsync();
 
@@ -140,6 +147,14 @@ namespace rbl_tracker.Services.HostServices
 
             return serviceResponse;
 
+        }
+        private async Task<bool> HostExists(string host)
+        {
+            if (await _context.Hosts.AnyAsync(u => u.Address.ToLower() == host.ToLower()))
+            {
+                return true;
+            }
+            return false;
         }
 
     }

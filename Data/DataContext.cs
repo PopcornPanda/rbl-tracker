@@ -35,6 +35,10 @@ namespace rbl_tracker.Data
                 new Rbl { Id = new Guid("f77e8059-5df3-4c79-80ed-4d6f45db8f91"), Name = "UCEPROTECTL2", Address = "dnsbl-2.uceprotect.net", Type = RblType.Rbl, Level = RblLevel.High, DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS", CreateTime = 1683371995L, UpdateTime = 1683371995L },
                 new Rbl { Id = new Guid("f8f83421-1e5e-4deb-9898-f49588a19025"), Name = "UCEPROTECTL3", Address = "dnsbl-3.uceprotect.net", Type = RblType.Rbl, Level = RblLevel.High, DelistUrl = "http://www.uceprotect.net/en/rblcheck.php?ipr=ADDRESS", CreateTime = 1683371995L, UpdateTime = 1683371995L }
             );
+            
+            modelBuilder.Entity<Models.Host>().HasIndex(h => h.Address).IsUnique();
+            modelBuilder.Entity<Models.User>().HasIndex(h => h.Username).IsUnique();
+            modelBuilder.Entity<Models.User>().HasIndex(h => h.Email).IsUnique();
 
         }
 

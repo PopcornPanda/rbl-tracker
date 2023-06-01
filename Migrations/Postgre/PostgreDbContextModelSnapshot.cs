@@ -85,6 +85,9 @@ namespace rbl_tracker.Migrations.Postgre
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Address")
+                        .IsUnique();
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Hosts");
@@ -390,6 +393,12 @@ namespace rbl_tracker.Migrations.Postgre
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
