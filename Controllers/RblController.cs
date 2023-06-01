@@ -22,23 +22,37 @@ namespace rbl_tracker.Controllers
             return Ok(await _rblService.GetAllRbls());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> GetById(Guid id)
         {
-            return Ok(await _rblService.GetRblById(id));
+            var response = await _rblService.GetRblById(id);
+            if (!response.Success)
+                return NotFound(response);
+
+            return Ok(response);
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("{name:alpha}")]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> GetByName(string name)
         {
-            return Ok(await _rblService.GetRblByName(name));
+            var response = await _rblService.GetRblByName(name);
+            if (!response.Success)
+                return NotFound(response);
+
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> AddRbl(NewRblDto newRbl)
         {
-            return Ok(await _rblService.AddRbl(newRbl));
+            var response = await _rblService.AddRbl(newRbl);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
         }
 
         [Authorize(Roles = "Admin")]
@@ -46,7 +60,7 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> UpdateRbl(UpdateRblDto updatedRbl)
         {
             var response = await _rblService.UpdateRbl(updatedRbl);
-            if (response.Success is false)
+            if (!response.Success)
                 return NotFound(response);
 
             return Ok(response);
@@ -56,7 +70,7 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetRblDto>>>> Delete(Guid id)
         {
             var response = await _rblService.DeleteRbl(id);
-            if (response.Success is false)
+            if (!response.Success)
                 return NotFound(response);
 
             return Ok(response);

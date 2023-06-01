@@ -20,6 +20,7 @@ namespace rbl_tracker
             CreateMap<NewHostDto, Models.Host>();
 
             CreateMap<User, GetUserDto>();
+            CreateMap<User, GetSimpleUserDto>();
 
             CreateMap<CheckRblHistory, GetRblCheckHistoryDto>();
             CreateMap<CheckRblHistory, GetRblCheckSimpleHistoryDto>();

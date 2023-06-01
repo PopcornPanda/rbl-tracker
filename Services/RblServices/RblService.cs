@@ -16,9 +16,15 @@ namespace rbl_tracker.Services.RblServices
         public async Task<ServiceResponse<List<GetRblDto>>> AddRbl(NewRblDto newRbl)
         {
             var serviceResponse = new ServiceResponse<List<GetRblDto>>();
-
-            _context.Rbls.Add(_mapper.Map<Rbl>(newRbl));
-            await _context.SaveChangesAsync();
+            try {
+                _context.Rbls.Add(_mapper.Map<Rbl>(newRbl));
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
 
             serviceResponse.Data =
                 await _context.Rbls.Select(r => _mapper.Map<GetRblDto>(r)).ToListAsync();
@@ -65,7 +71,19 @@ namespace rbl_tracker.Services.RblServices
         {
             var serviceResponse = new ServiceResponse<GetRblDto>();
             var rbls = await _context.Rbls.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Id == id));
+            
+            try
+            {
+                serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Id == id));
+                if (serviceResponse.Data is null)
+                    throw new Exception($"Rbl with Id '{id}' not found");
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
             return serviceResponse;
         }
 
@@ -73,7 +91,17 @@ namespace rbl_tracker.Services.RblServices
         {
             var serviceResponse = new ServiceResponse<GetRblDto>();
             var rbls = await _context.Rbls.ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Name == name));
+            try
+            {
+                serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Name == name));
+                if (serviceResponse.Data is null)
+                    throw new Exception($"Rbl with name '{name}' not found");
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
             return serviceResponse;
         }
 

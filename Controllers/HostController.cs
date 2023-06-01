@@ -24,29 +24,47 @@ namespace rbl_tracker.Controllers
             return Ok(await _HostService.GetAllHosts());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> GetById(Guid id)
         {
-            return Ok(await _HostService.GetHostById(id));
+            var response =await _HostService.GetHostById(id);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("{name:alpha}")]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> GetByName(string name)
         {
-            return Ok(await _HostService.GetHostByName(name));
+            var response =await _HostService.GetHostByName(name);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
         }
 
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> AddHost(NewHostDto newHost)
         {
-            return Ok(await _HostService.AddHost(newHost));
+            var response = await _HostService.AddHost(newHost);
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
         }
 
         [HttpPut]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> UpdateHost(UpdateHostDto updatedHost)
         {
             var response = await _HostService.UpdateHost(updatedHost);
-            if (response.Success is false)
+            if (!response.Success)
                 return NotFound(response);
 
             return Ok(response);
@@ -56,7 +74,7 @@ namespace rbl_tracker.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> Delete(Guid id)
         {
             var response = await _HostService.DeleteHost(id);
-            if (response.Success is false)
+            if (!response.Success)
                 return NotFound(response);
 
             return Ok(response);

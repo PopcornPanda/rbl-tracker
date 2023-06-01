@@ -28,22 +28,28 @@ namespace rbl_tracker.Services.HostServices
             var host = _mapper.Map<Models.Host>(newHost);
             host.Owner = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetUserId());
 
-            if (host.isDomain)
+            try
             {
-                if (Uri.CheckHostName(host.Address).Equals(UriHostNameType.Dns) is false)
-                    throw new Exception($"Provided Domain is not valid");
-            }
-            else
-            {
-                if (IPAddress.TryParse(host.Address, out ValidateHost!) is false)
-                    throw new Exception($"Provided Host is not valid IP address");
-            }
+                if (host.isDomain)
+                {
+                    if (Uri.CheckHostName(host.Address).Equals(UriHostNameType.Dns) is false)
+                        throw new Exception($"Provided Domain is not valid");
+                }
+                else
+                {
+                    if (IPAddress.TryParse(host.Address, out ValidateHost!) is false)
+                        throw new Exception($"Provided Host is not valid IP address");
+                }
 
-            if (await HostExists(host.Address))
+                if (await HostExists(host.Address))
+                {
+                    throw new Exception($"Host already exists!");
+                }
+            }
+            catch (Exception ex)
             {
                 serviceResponse.Success = false;
-                serviceResponse.Message = "Host already exists!";
-                return serviceResponse;
+                serviceResponse.Message = ex.Message;
             }
 
             _context.Hosts.Add(_mapper.Map<Models.Host>(host));
@@ -102,7 +108,18 @@ namespace rbl_tracker.Services.HostServices
             var serviceResponse = new ServiceResponse<GetHostDto>();
             var hosts = await _context.Hosts.Include(i => i.Owner)
                 .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetHostDto>(hosts.FirstOrDefault(i => i.Id == id));
+            try
+            {
+                serviceResponse.Data = _mapper.Map<GetHostDto>(hosts.FirstOrDefault(i => i.Id == id));
+                if (serviceResponse.Data is null)
+                    throw new Exception($"Host with Id '{id}' not found");
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
             return serviceResponse;
         }
 
@@ -111,7 +128,19 @@ namespace rbl_tracker.Services.HostServices
             var serviceResponse = new ServiceResponse<GetHostDto>();
             var hosts = await _context.Hosts.Include(i => i.Owner)
                 .Where(i => i.Owner!.Id == GetUserId()).ToListAsync();
-            serviceResponse.Data = _mapper.Map<GetHostDto>(hosts.FirstOrDefault(i => i.Name == name));
+
+            try
+            {
+                serviceResponse.Data = _mapper.Map<GetHostDto>(hosts.FirstOrDefault(i => i.Name == name));
+                if (serviceResponse.Data is null)
+                    throw new Exception($"Host with name '{name}' not found");
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
             return serviceResponse;
         }
 
