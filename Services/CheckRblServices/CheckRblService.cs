@@ -6,6 +6,8 @@ using DnsClient;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using rbl_tracker.Configuration;
+using rbl_tracker.Services.Notification;
+using MimeKit;
 
 namespace rbl_tracker.Services.CheckRblServices
 {
@@ -15,13 +17,15 @@ namespace rbl_tracker.Services.CheckRblServices
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResolverSettings _settings;
+        private readonly INotificationService _notify;
 
-        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IOptions<ResolverSettings> settings)
+        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IOptions<ResolverSettings> settings, INotificationService notify)
         {
             _httpContextAccessor = httpContextAccessor;
             _settings = settings.Value;
             _context = context;
             _mapper = mapper;
+            _notify = notify;
         }
 
         public async Task<ServiceResponse<List<GetRblCheckHistoryDto>>> RblCheck(Guid userId)
@@ -62,10 +66,20 @@ namespace rbl_tracker.Services.CheckRblServices
 
                         if (checkResult.Rbls.Any())
                         {
+                            var _entry = await _context.CheckRblHistory
+                                .Include(h => h.Rbls)
+                                .OrderByDescending(h => h.CheckTime)
+                                .Where(h => h.Host == host.Id)
+                                .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
+                                .FirstAsync();
+                            var _oldRbls = _entry is not null ? _entry.Rbls : new List<Dtos.Rbl.GetRblListingDto>();
+                            var msg = NotificationBody(_oldRbls,checkResult.Rbls);
+
                             checkResult.Host = host.Id;
                             checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                             _context.CheckRblHistory.Add(checkResult);
                             await _context.SaveChangesAsync();
+                            await _notify.SendAsync("dasda",msg,new CancellationToken());
                         }
                     };
             }
@@ -204,6 +218,13 @@ namespace rbl_tracker.Services.CheckRblServices
             };
 
             return new LookupClient(lookupOptions);
+        }
+
+        private BodyBuilder NotificationBody(List<Dtos.Rbl.GetRblListingDto> old, List<Rbl> cur)
+        {
+            var body = new BodyBuilder();
+
+            return body;
         }
 
     }

@@ -6,6 +6,7 @@ using rbl_tracker.Services.HostServices;
 using rbl_tracker.Services.Info;
 using rbl_tracker.Services.CheckRblServices;
 using rbl_tracker.Services.Auth;
+using rbl_tracker.Services.Notification;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -80,6 +81,7 @@ builder.Services.AddScoped<IHostService, HostService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInfoService, InfoService>();
 builder.Services.AddScoped<ICheckRblService, CheckRblService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
