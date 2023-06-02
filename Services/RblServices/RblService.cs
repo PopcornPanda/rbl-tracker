@@ -16,7 +16,8 @@ namespace rbl_tracker.Services.RblServices
         public async Task<ServiceResponse<List<GetRblDto>>> AddRbl(NewRblDto newRbl)
         {
             var serviceResponse = new ServiceResponse<List<GetRblDto>>();
-            try {
+            try
+            {
                 _context.Rbls.Add(_mapper.Map<Rbl>(newRbl));
                 await _context.SaveChangesAsync();
             }
@@ -71,7 +72,7 @@ namespace rbl_tracker.Services.RblServices
         {
             var serviceResponse = new ServiceResponse<GetRblDto>();
             var rbls = await _context.Rbls.ToListAsync();
-            
+
             try
             {
                 serviceResponse.Data = _mapper.Map<GetRblDto>(rbls.FirstOrDefault(r => r.Id == id));

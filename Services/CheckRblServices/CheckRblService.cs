@@ -17,12 +17,15 @@ namespace rbl_tracker.Services.CheckRblServices
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResolverSettings _settings;
+        private readonly MailSettings _mail;
         private readonly INotificationService _notify;
 
-        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor, IOptions<ResolverSettings> settings, INotificationService notify)
+        public CheckRblService(IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor,
+                                IOptions<ResolverSettings> settings, INotificationService notify, IOptions<MailSettings> mail)
         {
             _httpContextAccessor = httpContextAccessor;
             _settings = settings.Value;
+            _mail = mail.Value;
             _context = context;
             _mapper = mapper;
             _notify = notify;
@@ -71,15 +74,16 @@ namespace rbl_tracker.Services.CheckRblServices
                                 .OrderByDescending(h => h.CheckTime)
                                 .Where(h => h.Host == host.Id)
                                 .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
-                                .FirstAsync();
-                            var _oldRbls = _entry is not null ? _entry.Rbls : new List<Dtos.Rbl.GetRblListingDto>();
-                            var msg = NotificationBody(_oldRbls,checkResult.Rbls);
+                                .FirstOrDefaultAsync();
+                            var history = _entry is not null ? _entry : new GetRblCheckSimpleHistoryDto();
 
                             checkResult.Host = host.Id;
                             checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                             _context.CheckRblHistory.Add(checkResult);
                             await _context.SaveChangesAsync();
-                            await _notify.SendAsync("dasda",msg,new CancellationToken());
+
+                            if (_mail.Enabled)
+                                await SendEmailNotification(host, checkResult, history);
                         }
                     };
             }
@@ -171,13 +175,24 @@ namespace rbl_tracker.Services.CheckRblServices
                             }
                         }
                     });
-                    
+
                 if (checkResult.Rbls.Any())
                 {
+                    var _entry = await _context.CheckRblHistory
+                        .Include(h => h.Rbls)
+                        .OrderByDescending(h => h.CheckTime)
+                        .Where(h => h.Host == host.Id)
+                        .Select(h => _mapper.Map<GetRblCheckSimpleHistoryDto>(h))
+                        .FirstOrDefaultAsync();
+                    var history = _entry is not null ? _entry : new GetRblCheckSimpleHistoryDto();
+
                     checkResult.Host = host.Id;
                     checkResult.CheckTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
                     _context.CheckRblHistory.Add(checkResult);
                     await _context.SaveChangesAsync();
+
+                    if (_mail.Enabled)
+                        await SendEmailNotification(host, checkResult, history);
                 }
             }
             catch (Exception ex)
@@ -220,11 +235,35 @@ namespace rbl_tracker.Services.CheckRblServices
             return new LookupClient(lookupOptions);
         }
 
-        private BodyBuilder NotificationBody(List<Dtos.Rbl.GetRblListingDto> old, List<Rbl> cur)
+        private BodyBuilder NotificationBody(List<Dtos.Rbl.GetRblListingDto> old, List<Rbl> cur, string host)
         {
+            var _cur = _mapper.Map<List<Dtos.Rbl.GetRblListingDto>>(cur);
+            var _added = _cur.Where(c => !old.Any(o => c.Name == o.Name)).ToList();
+            var _removed = old.Where(o => !_cur.Any(c => o.Name == c.Name)).ToList();
             var body = new BodyBuilder();
+            var mailText = EmailHelper.BuildTemplate("Templates/", "HostStatusChange.html");
+            mailText = mailText.Replace("[host]", host)
+                .Replace("[added]", EmailHelper.BuildList(_added))
+                .Replace("[removed]", EmailHelper.BuildList(_removed))
+                .Replace("ADDRESS", host);
+
+            if (_added.Any() || _removed.Any())
+            {
+                body.HtmlBody = mailText;
+                body.TextBody = EmailHelper.ConvertToPlainText(mailText);
+            }
 
             return body;
+        }
+
+        private async Task SendEmailNotification(Models.Host host, CheckRblHistory checkResult, GetRblCheckSimpleHistoryDto entry)
+        {
+            var _oldRbls = entry is not null ? entry.Rbls : new List<Dtos.Rbl.GetRblListingDto>();
+            var msg = NotificationBody(_oldRbls, checkResult.Rbls, host.Address);
+            var subject = $"Status of {host.Address} have been changed on RBL!";
+            if (msg.TextBody is not null)
+                await _notify.SendAsync(host.Owner!.Email, msg, subject, new CancellationToken());
+
         }
 
     }

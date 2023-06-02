@@ -10,5 +10,6 @@ namespace rbl_tracker.Configuration
         public int Port { get; set; }
         public bool UseSSL { get; set; }
         public bool UseStartTls { get; set; }
+        public bool Enabled { get; set; } = false;
     }
 }

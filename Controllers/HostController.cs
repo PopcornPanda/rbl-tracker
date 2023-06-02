@@ -27,7 +27,7 @@ namespace rbl_tracker.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> GetById(Guid id)
         {
-            var response =await _HostService.GetHostById(id);
+            var response = await _HostService.GetHostById(id);
             if (!response.Success)
             {
                 return NotFound(response);
@@ -39,7 +39,7 @@ namespace rbl_tracker.Controllers
         [HttpGet("{name:alpha}")]
         public async Task<ActionResult<ServiceResponse<List<GetHostDto>>>> GetByName(string name)
         {
-            var response =await _HostService.GetHostByName(name);
+            var response = await _HostService.GetHostByName(name);
             if (!response.Success)
             {
                 return NotFound(response);

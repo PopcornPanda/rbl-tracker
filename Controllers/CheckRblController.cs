@@ -39,11 +39,11 @@ namespace rbl_tracker.Controllers
             {
                 return Ok(await _checkRblService.RblCheckHistorySingle(host));
             }
-            else 
+            else
             {
                 return NotFound($"Host '{address}' not found");
             }
-            
+
         }
 
         [HttpPost]
@@ -64,7 +64,7 @@ namespace rbl_tracker.Controllers
             {
                 return Ok(await _checkRblService.RblCheckSingle(owner, host));
             }
-            else 
+            else
             {
                 return NotFound($"Host '{address}' not found");
             }
