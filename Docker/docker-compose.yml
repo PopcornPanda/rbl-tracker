@@ -18,6 +18,7 @@ services:
         condition: service_healthy
     volumes:
       - ./appsettings.mssql.json:/app/appsettings.json
+      - ../Templates:/app/Templates
     healthcheck:
       test: ["CMD", 'curl', '-s', '-f', 'localhost:5000/healthz' ]
       retries: 5
