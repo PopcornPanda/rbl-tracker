@@ -22,7 +22,7 @@ As an dotnet API, RBL tracker ships with bundled swagger and swagger UI, which c
 - Run scheduled tasks inside the application itself
 - Add support for adding CIDRs (it will be handled as name alias)
 - Add groups 
-- Add e-mail notification when IPs of a user in newly detected on RBL
+- ~~Add e-mail notification when IPs of a user in newly detected on RBL~~ :white_check_mark:
 - Add IP/Domain owner validation (we should use contact info from whois to validate ownership)
 
 # Security Policy

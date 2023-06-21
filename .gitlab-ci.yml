@@ -41,13 +41,14 @@ stages:
     paths:
       - Docker/
       - publish/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      when: always
-    - if: $CI_COMMIT_TAG
-      when: always
-    - if: $CI_COMMIT_TAG =~ "/^$/" && $CI_PIPELINE_SOURCE != 'merge_request_event'
-      when: manual
+  except:
+    changes:
+      - "*.md"
+  only:
+    - merge_requests
+    - main
+    - tags
+    - triggers
 
 .docker:
   image:
