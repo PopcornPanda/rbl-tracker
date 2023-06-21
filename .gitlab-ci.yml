@@ -68,6 +68,14 @@ stages:
       --cache=true
       --cache-ttl=48h
       --customPlatform=linux/${ARCH}
+  except:
+    changes:
+      - "*.md"
+  only:
+    - merge_requests
+    - main
+    - tags
+    - triggers
 
 build amd64 application:
   extends: .build
