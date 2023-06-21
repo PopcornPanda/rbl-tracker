@@ -9,6 +9,15 @@ variables:
   CONTAINER_IMAGE_NAME: ${CONTAINER_DEV_IMAGE}
   CONTAINER_EASY_NAME: ${CONTAINER_CANARY_IMAGE}
 
+.rules: &rules
+  except:
+      changes:
+        - "*.md"
+  only:
+    - merge_requests
+    - main
+    - tags
+    - triggers
 
 workflow:
   rules:
@@ -41,14 +50,7 @@ stages:
     paths:
       - Docker/
       - publish/
-  except:
-    changes:
-      - "*.md"
-  only:
-    - merge_requests
-    - main
-    - tags
-    - triggers
+  <<: *rules
 
 .docker:
   image:
@@ -68,14 +70,7 @@ stages:
       --cache=true
       --cache-ttl=48h
       --customPlatform=linux/${ARCH}
-  except:
-    changes:
-      - "*.md"
-  only:
-    - merge_requests
-    - main
-    - tags
-    - triggers
+  <<: *rules
 
 build amd64 application:
   extends: .build
@@ -135,3 +130,4 @@ make multi-arch:
   tags:
     - docker
     - x86
+  <<: *rules
